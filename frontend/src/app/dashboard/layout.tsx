@@ -1,120 +1,103 @@
-// src/app/Dashboard/layout.tsx
+"use client";
 
-"use client"; // Add this line
-
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faCog } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons/faCalendar";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 interface DashboardLayoutProps {
-  children: ReactNode; // Specify the type of children prop
+  children: ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
+  const [isCalendarOpen, setCalendarOpen] = useState(false);
+  const calendarRef = useRef<HTMLDivElement | null>(null);
+  const [date, setDate] = useState(new Date());
 
-  const toggleDropdown = () => {
-    setDropdownOpen((prev) => !prev);
+  const toggleCalendar = () => {
+    setCalendarOpen((prev) => !prev);
   };
 
+  const handleDateClick = (selectedDate: Date) => {
+    // Create a new Date object and set the time to the start of the day (local time)
+    const localDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+    const formattedDate = localDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+    router.push(`/add-event?date=${formattedDate}`); // Redirect with the date as a query parameter
+  };
+  
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+        setCalendarOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [calendarRef]);
+
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-72 bg-green-900 text-white">
-        <div className="p-6 text-5xl font-bold">CropGain</div>
-        <nav className="space-y-4 text-2xl mt-6">
-          <Link
-            href="/dashboard"
-            className="block py-2 px-6 hover:bg-green-700"
-          >
-            Dashboard
-          </Link>
+    <div className="flex flex-col min-h-screen">
+      <header className="w-full bg-green-700 text-white p-4">
+        <div className="flex justify-between items-center">
+          <div className="text-3xl font-bold">CropGain</div>
+          <nav className="flex space-x-10 text-xl mr-4">
+            <Link href="/dashboard" className="hover:text-green-300">
+              Dashboard
+            </Link>
+            <Link
+              href="/dashboard/Accounts"
+              className="hover:text-green-300"
+            >
+             Accounts
+            </Link>
+            <Link
+              href="/dashboard/Management"
+              className="hover:text-green-300"
+            >
+              Management
+            </Link>
+            <button
+              onClick={toggleCalendar}
+              aria-label="Toggle calendar"
+              className="hover:text-green-300"
+            >
+              <FontAwesomeIcon icon={faCalendar} />
+            </button>
 
-          <div className="relative">
-            <div
-              className="py-2 px-6 hover:bg-green-700 cursor-pointer flex items-center"
-              onClick={toggleDropdown}
-            >
-              <span>Sections</span>
-              <FontAwesomeIcon
-                icon={faChevronDown}
-                className="ml-6 text-sm w-4 h-4"
-              />
-            </div>
-            <div
-              className={`bg-green-800 text-white w-full mt-1 space-y-2 transition-all duration-300 ${
-                isDropdownOpen ? "block" : "hidden"
-              }`}
-            >
-              <Link
-                href="/section1"
-                className="block py-2 px-6 hover:bg-green-700"
-              >
-                Section 1
-              </Link>
-              <Link
-                href="/section2"
-                className="block py-2 px-6 hover:bg-green-700"
-              >
-                Section 2
-              </Link>
-              <Link
-                href="/section3"
-                className="block py-2 px-6 hover:bg-green-700"
-              >
-                Section 3
-              </Link>
-              <Link
-                href="/section4"
-                className="block py-2 px-6 hover:bg-green-700"
-              >
-                Section 4
-              </Link>
-            </div>
+            
+            <Link href="#" className="hover:text-green-300">
+              <FontAwesomeIcon icon={faBell} />
+            </Link>
+
+
+            <Link href="/settings" className="hover:text-green-300">
+              <FontAwesomeIcon icon={faCog} />
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="flex-1 p-6 bg-white relative">
+        {children}
+        {isCalendarOpen && (
+          <div
+            ref={calendarRef}
+            className="absolute top-10 right-10 bg-white shadow-lg rounded-lg p-4 z-10 -mt-4"
+          >
+            <h2 className="text-lg font-semibold">Calendar</h2>
+            <Calendar onChange={handleDateClick} value={date} />
           </div>
-
-          <Link href="/plants" className="block py-2 px-6 hover:bg-green-700">
-            Plants
-          </Link>
-          <Link
-            href="/dashboard/expense-management"
-            className="block py-2 px-6 hover:bg-green-700"
-          >
-            Expense Management
-          </Link>
-          <Link
-            href="/dashboard/income-management"
-            className="block py-2 px-6 hover:bg-green-700"
-          >
-            Income Management
-          </Link>
-          <Link
-            href="/financial-reports"
-            className="block py-2 px-6 hover:bg-green-700"
-          >
-            Financial Reports
-          </Link>
-          <Link
-            href="/inventory"
-            className="block py-2 px-6 hover:bg-green-700"
-          >
-            Inventory
-          </Link>
-          <Link
-            href="/analytics"
-            className="block py-2 px-6 hover:bg-green-700"
-          >
-            Analytics and Insights
-          </Link>
-          <Link href="/settings" className="block py-2 px-6 hover:bg-green-700">
-            Settings
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-6 bg-white">{children}</main>
+        )}
+      </main>
     </div>
   );
 }
