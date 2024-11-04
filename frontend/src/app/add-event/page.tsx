@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -10,10 +9,10 @@ import {
   faTrash,
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
-import Calendar from "react-calendar"; 
-import "react-calendar/dist/Calendar.css"; 
-import "react-datepicker/dist/react-datepicker.css"; 
-import DatePicker from "react-datepicker"; 
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 
 const AddEvent: React.FC = () => {
   const router = useRouter();
@@ -22,7 +21,7 @@ const AddEvent: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [eventInputs, setEventInputs] = useState<
     { name: string; time: Date | null }[]
-  >([]); 
+  >([]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -115,7 +114,7 @@ const AddEvent: React.FC = () => {
             onClick={toggleCalendar}
             className="p-4 bg-gray-200 rounded-lg text-3xl"
           >
-            <FontAwesomeIcon icon={faCalendar} className="text-blue-700"/>
+            <FontAwesomeIcon icon={faCalendar} className="text-blue-700" />
           </button>
         </div>
       </div>
@@ -141,65 +140,57 @@ const AddEvent: React.FC = () => {
         </button>
       </div>
 
+      {/* Input Fields for Events */}
+      <div className="w-full max-w-7xl bg-gray-200 rounded-lg p-8 flex flex-col items-center">
+        {eventInputs.map((input, index) => (
+          <div
+            key={index}
+            className="w-full flex items-center mb-4 font-roboto"
+          >
+            {/* Event Name Input */}
+            <input
+              type="text"
+              value={input.name}
+              onChange={(event) => handleInputChange(index, event)}
+              placeholder="Enter event name"
+              className="border p-2 rounded w-4/5 mr-6" // Full width for event name
+            />
 
+            {/* Time Picker Wrapper with Reduced Width */}
+            <div className="w-1/4">
+              <DatePicker
+                selected={input.time}
+                onChange={(time) => handleTimeChange(index, time)}
+                showTimeSelect
+                showTimeSelectOnly // Show only time picker
+                timeIntervals={15} // Time intervals (15 minutes)
+                dateFormat="h:mm aa" // Format for time display
+                className="border p-2 rounded w-2/5 font-roboto"
+                placeholderText="Time"
+              />
+            </div>
 
-{/* Input Fields for Events */}
-<div className="w-full max-w-7xl bg-gray-200 rounded-lg p-8 flex flex-col items-center">
-  {eventInputs.map((input, index) => (
-    <div key={index} className="w-full flex items-center mb-4 font-roboto">
-      {/* Event Name Input */}
-      <input
-        type="text"
-        value={input.name}
-        onChange={(event) => handleInputChange(index, event)}
-        placeholder="Enter event name"
-        className="border p-2 rounded w-4/5 mr-6" // Full width for event name
-      />
-
-      {/* Time Picker Wrapper with Reduced Width */}
-      <div className="w-1/4">
-        <DatePicker
-          selected={input.time}
-          onChange={(time) => handleTimeChange(index, time)}
-          showTimeSelect
-          showTimeSelectOnly // Show only time picker
-          timeIntervals={15} // Time intervals (15 minutes)
-          dateFormat="h:mm aa" // Format for time display
-          className="border p-2 rounded w-2/5 font-roboto"
-          placeholderText="Time"
-        />
-      </div>
-
-      {/* Buttons with Reduced Gap */}
-      <div className="flex space-x-6 text-xl -ml-14"> {/* Changed from space-x-6 to space-x-3 */}
-        {/* Edit Button */}
-        <button
-          onClick={() => handleEditEvent(index)}
-          className="text-blue-600 hover:scale-105"
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </button>
-
-        {/* Delete Button */}
-        <button
-          onClick={() => handleDeleteEvent(index)}
-          className="text-red-600 hover:scale-105"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      </div>
-    </div>
-  ))}
-
-
-
-
-
-
-
-
-
-
+            {/* Buttons with Reduced Gap */}
+            <div className="flex space-x-6 text-xl -ml-14">
+              {" "}
+              {/* Changed from space-x-6 to space-x-3 */}
+              {/* Edit Button */}
+              <button
+                onClick={() => handleEditEvent(index)}
+                className="text-blue-600 hover:scale-105"
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </button>
+              {/* Delete Button */}
+              <button
+                onClick={() => handleDeleteEvent(index)}
+                className="text-red-600 hover:scale-105"
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            </div>
+          </div>
+        ))}
 
         <button
           onClick={handleSaveEvents}
