@@ -1,49 +1,65 @@
-// controllers/accountsController.js
+const express = require("express");
+const router = express.Router();
+const Account = require("../models/CoopStateAccount");
 
-const Account = require("../models/account");
-
-// Get all income or expense entries
-exports.getAccounts = async (req, res) => {
-  const { type } = req.query;
+// Create a new account entry
+router.post("/", async (req, res) => {
   try {
-    const accounts = await Account.find(type ? { type } : {});
-    res.status(200).json(accounts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Add a new income or expense entry
-exports.addAccount = async (req, res) => {
-  try {
-    const newAccount = new Account(req.body);
-    await newAccount.save();
-    res.status(201).json(newAccount);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// Update an income or expense entry
-exports.updateAccount = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const updatedAccount = await Account.findByIdAndUpdate(id, req.body, {
-      new: true,
+    const { date, previousMonth, description, subTotal, type } = req.body;
+    const total = previousMonth + subTotal; // Calculate total
+    const account = new Account({
+      date,
+      previousMonth,
+      description,
+      subTotal,
+      total,
+      type,
     });
-    res.status(200).json(updatedAccount);
+    await account.save();
+    res.status(201).json(account);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: "Error creating account entry", error });
   }
-};
+});
 
-// Delete an income or expense entry
-exports.deleteAccount = async (req, res) => {
-  const { id } = req.params;
+// Get all account entries
+router.get("/", async (req, res) => {
   try {
-    await Account.findByIdAndDelete(id);
-    res.status(200).json({ message: "Account deleted successfully" });
+    const accounts = await Account.find();
+    res.json(accounts);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "Error fetching accounts", error });
   }
-};
+});
+
+// Update an account entry
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, previousMonth, description, subTotal, type } = req.body;
+    const total = previousMonth + subTotal; // Calculate total
+    const account = await Account.findByIdAndUpdate(
+      id,
+      { date, previousMonth, description, subTotal, total, type },
+      { new: true }
+    );
+    if (!account) return res.status(404).json({ message: "Account not found" });
+    res.json(account);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating account", error });
+  }
+});
+
+// Delete an account entry
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const account = await Account.findByIdAndDelete(id);
+    if (!account) return res.status(404).json({ message: "Account not found" });
+    res.json({ message: "Account entry deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting account", error });
+  }
+});
+
+module.exports = router;

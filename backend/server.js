@@ -1,6 +1,7 @@
 const express = require("express");
 const connectDB = require("./config/db");
 const cors = require("cors");
+const accountRoutes = require("./controllers/accountsController");
 
 const app = express(); // Initialize the 'app' first
 
@@ -13,6 +14,7 @@ app.use(express.json({ extended: false })); // Middleware for parsing JSON
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/Accounts/coop/", accountRoutes);
 
 const PORT = process.env.PORT || 5000;
 
