@@ -1,6 +1,6 @@
 // controllers/eventsController.js
 
-const Event = require("../models/event");
+const Event = require("../models/events");
 
 // Get all events for a specific date
 exports.getEventsByDate = async (req, res) => {
