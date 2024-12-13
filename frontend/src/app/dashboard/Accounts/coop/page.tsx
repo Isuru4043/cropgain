@@ -1,310 +1,280 @@
 "use client";
-
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { FaPlus, FaTrash, FaEdit, FaSave } from "react-icons/fa";
-import "@/app/globals.css";
-import ConfirmDialog from "@/components/ConfirmDialog";
+import Link from "next/link";
 
-interface DataItem {
-  id: number;
-  date: string;
-  previousMonth: number;
+interface Row {
+  account: string;
   description: string;
-  subTotal: number;
-  total: number;
+  income: string;
+  expense: string;
+  date?: string; // Optional field
+  crop?: string; // Optional field
+  unitPrice?: string; // Optional field
+  units?: string; // Optional field
 }
 
-const initialIncomeData: DataItem[] = [
-  {
-    id: 1,
-    date: "2023-01-01",
-    previousMonth: 100,
-    description: "Product Sales",
-    subTotal: 200,
-    total: 300,
-  },
-];
+const TableComponent = () => {
+  const initialRows: Row[] = [
+    {
+      account: "212,925.18",
+      description: "Opening Balance",
+      income: "212,925.18",
+      expense: "",
+    },
+    {
+      account: "212,925.18",
+      description: "Total Income",
+      income: "212,925.18",
+      expense: "",
+    },
+    {
+      account: "181,763.41",
+      description: "Total Expenses",
+      income: "",
+      expense: "181,763.41",
+    },
+    {
+      account: "13,200.00",
+      description: "Fixed Expenses",
+      income: "",
+      expense: "13,200.00",
+    },
+    {
+      account: "79,275.00",
+      description: "Variable Expenses",
+      income: "",
+      expense: "79,275.00",
+    },
+    {
+      account: "274,238.41",
+      description: "Net Balance",
+      income: "274,238.41",
+      expense: "61,313.23",
+    },
+  ];
 
-const initialExpenseData: DataItem[] = [
-  {
-    id: 1,
-    date: "2023-01-02",
-    previousMonth: 50,
-    description: "Utilities",
-    subTotal: 100,
-    total: 150,
-  },
-];
+  const [rows, setRows] = useState<Row[]>(initialRows);
 
-const Table: React.FC = () => {
-  const [incomeData, setIncomeData] = useState<DataItem[]>(initialIncomeData);
-  const [expenseData, setExpenseData] =
-    useState<DataItem[]>(initialExpenseData);
-  const [newItem, setNewItem] = useState<DataItem>({
-    id: 0,
-    date: new Date().toISOString().split("T")[0],
-    previousMonth: 0,
-    description: "",
-    subTotal: 0,
-    total: 0,
-  });
-  const [editItemId, setEditItemId] = useState<number | null>(null);
-  const [isIncome, setIsIncome] = useState(true); // Track if the action is for Income or Expense
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
-
-  const handleAddItem = (isIncome: boolean) => {
-    const newEntry = {
-      ...newItem,
-      id: (isIncome ? incomeData : expenseData).length + 1,
-      total: newItem.previousMonth + newItem.subTotal,
-    };
-    if (isIncome) {
-      setIncomeData([...incomeData, newEntry]);
-    } else {
-      setExpenseData([...expenseData, newEntry]);
-    }
-    setNewItem({
-      id: 0,
-      date: new Date().toISOString().split("T")[0],
-      previousMonth: 0,
-      description: "",
-      subTotal: 0,
-      total: 0,
-    });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    field: keyof Row
+  ) => {
+    const newRows = [...rows];
+    newRows[index][field] = e.target.value;
+    setRows(newRows);
   };
 
-  const handleEdit = (id: number, isIncome: boolean) => {
-    setEditItemId(id);
-    setIsIncome(isIncome);
-    const item = (isIncome ? incomeData : expenseData).find(
-      (item) => item.id === id
-    );
-    if (item) setNewItem(item);
-  };
-
-  const handleSave = () => {
-    const updatedData = (isIncome ? incomeData : expenseData).map((item) =>
-      item.id === editItemId
-        ? { ...newItem, total: newItem.previousMonth + newItem.subTotal }
-        : item
-    );
-    if (isIncome) {
-      setIncomeData(updatedData);
-    } else {
-      setExpenseData(updatedData);
-    }
-    setEditItemId(null);
-    setNewItem({
-      id: 0,
-      date: new Date().toISOString().split("T")[0],
-      previousMonth: 0,
-      description: "",
-      subTotal: 0,
-      total: 0,
-    });
-  };
-
-  const openDeleteDialog = (id: number, isIncome: boolean) => {
-    setDeleteItemId(id);
-    setIsIncome(isIncome);
-    setDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    const updatedData = (isIncome ? incomeData : expenseData).filter(
-      (item) => item.id !== deleteItemId
-    );
-    if (isIncome) {
-      setIncomeData(updatedData);
-    } else {
-      setExpenseData(updatedData);
-    }
-    setDialogOpen(false);
-    setDeleteItemId(null);
-  };
-
-  const cancelDelete = () => {
-    setDialogOpen(false);
-    setDeleteItemId(null);
-  };
-
-  const totalPreviousMonth = (data: DataItem[]) =>
-    data.reduce((acc, item) => acc + item.previousMonth, 0);
-  const totalSubTotal = (data: DataItem[]) =>
-    data.reduce((acc, item) => acc + item.subTotal, 0);
-  const totalAmount = (data: DataItem[]) =>
-    data.reduce((acc, item) => acc + item.total, 0);
+  // Separate income and expense rows
+  const incomeRows = rows.filter((row) => row.income !== "");
+  const expenseRows = rows.filter((row) => row.expense !== "");
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-green-700">
-        Financial Overview
-      </h2>
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
 
-      {["Income", "Expense"].map((section) => {
-        const data = section === "Income" ? incomeData : expenseData;
-        const addItem = () => handleAddItem(section === "Income");
+      <h1 className="text-4xl text-center font-semibold">Income per crops</h1>
+      {/* First Table - Crop Table */}
+      <div className="overflow-x-auto mt-8">
+        <table
+          className="table-auto border-collapse border border-gray-400 w-full"
+          style={{ tableLayout: "fixed" }}
+        >
+          <thead className="text-2xl">
+            <tr className="bg-gray-200">
+              <th className="border border-gray-400 p-2 text-center w-[200px]">
+                Date
+              </th>
+              <th className="border border-gray-400 p-2 text-center w-[400px]">
+                Crop
+              </th>
+              <th className="border border-gray-400 p-2 text-center w-[200px]">
+                Unit per price
+              </th>
+              <th className="border border-gray-400 p-2 text-center w-[200px]">
+                Number of units
+              </th>
+              <th className="border border-gray-400 p-2 text-center w-[200px]">
+                Income per each crop
+              </th>
+            </tr>
+          </thead>
+          <tbody className="text-lg">
+            {incomeRows.map((row, index) => (
+              <tr key={index}>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="date"
+                    value={row.date || ""}
+                    onChange={(e) => handleChange(e, index, "date")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2">
+                  <input
+                    type="text"
+                    value={row.crop || ""}
+                    onChange={(e) => handleChange(e, index, "crop")}
+                    className="border-none bg-transparent w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.unitPrice || ""}
+                    onChange={(e) => handleChange(e, index, "unitPrice")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.units || ""}
+                    onChange={(e) => handleChange(e, index, "units")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2 text-center">
+                  {/* Calculating Income per crop */}
+                  <input
+                    type="text"
+                    value={
+                      (parseFloat(row.unitPrice || "0") || 0) *
+                      (parseFloat(row.units || "0") || 0)
+                    }
+                    readOnly
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-        return (
-          <div key={section}>
-            <h3 className="text-xl font-semibold mt-4 mb-2 text-gray-700">
-              {section}
-            </h3>
-            <table className="min-w-full border-collapse border border-gray-300 mb-4">
-              <thead className="bg-green-200">
-                <tr>
-                  <th className="border border-gray-300 p-3 text-left text-gray-700">
-                    Date
-                  </th>
-                  <th className="border border-gray-300 p-3 text-left text-gray-700">
-                    Previous Month
-                  </th>
-                  <th className="border border-gray-300 p-3 text-left text-gray-700">
-                    Description
-                  </th>
-                  <th className="border border-gray-300 p-3 text-left text-gray-700">
-                    Sub Total
-                  </th>
-                  <th className="border border-gray-300 p-3 text-left text-gray-700">
-                    Total
-                  </th>
-                  <th className="border border-gray-300 p-3 text-left text-gray-700">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item) => (
-                  <tr key={item.id} className="bg-gray-50">
-                    <td className="border border-gray-300 p-3 text-gray-800">
-                      {item.date}
-                    </td>
-                    <td className="border border-gray-300 p-3 text-gray-800">
-                      {editItemId === item.id ? (
-                        <input
-                          type="number"
-                          value={newItem.previousMonth}
-                          onChange={(e) =>
-                            setNewItem({
-                              ...newItem,
-                              previousMonth: parseFloat(e.target.value),
-                            })
-                          }
-                          className="w-full border p-1"
-                        />
-                      ) : (
-                        item.previousMonth
-                      )}
-                    </td>
-                    <td className="border border-gray-300 p-3 text-gray-800">
-                      {editItemId === item.id ? (
-                        <input
-                          type="text"
-                          value={newItem.description}
-                          onChange={(e) =>
-                            setNewItem({
-                              ...newItem,
-                              description: e.target.value,
-                            })
-                          }
-                          className="w-full border p-1"
-                        />
-                      ) : (
-                        item.description
-                      )}
-                    </td>
-                    <td className="border border-gray-300 p-3 text-gray-800">
-                      {editItemId === item.id ? (
-                        <input
-                          type="number"
-                          value={newItem.subTotal}
-                          onChange={(e) =>
-                            setNewItem({
-                              ...newItem,
-                              subTotal: parseFloat(e.target.value),
-                            })
-                          }
-                          className="w-full border p-1"
-                        />
-                      ) : (
-                        item.subTotal
-                      )}
-                    </td>
-                    <td className="border border-gray-300 p-3 text-gray-800">
-                      {item.total}
-                    </td>
-                    <td className="border border-gray-300 p-3 flex space-x-4">
-                      {editItemId === item.id ? (
-                        <button
-                          onClick={handleSave}
-                          className="text-green-600 hover:text-green-800 transition-colors"
-                        >
-                          <FaSave />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            handleEdit(item.id, section === "Income")
-                          }
-                          className="text-green-600 hover:text-green-800 transition-colors"
-                        >
-                          <FaEdit />
-                        </button>
-                      )}
-                      <button
-                        onClick={() =>
-                          openDeleteDialog(item.id, section === "Income")
-                        }
-                        className="text-red-600 hover:text-red-800 transition-colors"
-                      >
-                        <FaTrash />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {/* Total Row */}
-                <tr className="bg-green-100">
-                  <td className="border border-gray-300 p-3 font-semibold text-gray-800"></td>
-                  <td className="border border-gray-300 p-3 font-semibold text-gray-800">
-                    {totalPreviousMonth(data)}
-                  </td>
-                  <td className="border border-gray-300 p-3 font-semibold text-gray-800">
-                    Total
-                  </td>
-                  <td className="border border-gray-300 p-3 font-semibold text-gray-800">
-                    {totalSubTotal(data)}
-                  </td>
-                  <td className="border border-gray-300 p-3 font-semibold text-gray-800">
-                    {totalAmount(data)}
-                  </td>
-                  <td className="border border-gray-300 p-3"></td>
-                </tr>
-              </tbody>
-            </table>
+      {/* Second Table - Income and Expenses */}
+      <div className="overflow-x-auto mt-12">
 
-            {/* Add Row Icon for each section */}
-            <div
-              className="flex items-center justify-center mt-2 cursor-pointer text-gray-600 hover:text-green-700 transition-colors"
-              onClick={addItem}
-            >
-              <FaPlus className="mr-2" size={20} />
-              <span className="font-semibold">Add Row</span>
-            </div>
-          </div>
-        );
-      })}
+      <h1 className="text-4xl text-center font-semibold">Genaral Profit and Loss Account</h1>
+        <table
+          className="table-auto border-collapse border border-gray-400 w-full mt-8"
+          style={{ tableLayout: "fixed" }}
+        >
+          <thead className="text-2xl">
+            <tr className="bg-gray-200">
+              <th className="border border-gray-400 p-2 text-center w-[200px]">
+                Previous month
+              </th>
+              <th className="border border-gray-400 p-2 text-center w-[400px]">
+                Description
+              </th>
+              <th className="border border-gray-400 p-2 text-center w-[200px]">
+                Sub Total
+              </th>
+              <th className="border border-gray-400 p-2 text-center w-[200px]">
+                Total
+              </th>
+            </tr>
+          </thead>
 
-      {/* Delete Confirmation Dialog */}
-      <ConfirmDialog
-        open={dialogOpen}
-        onClose={cancelDelete}
-        onConfirm={confirmDelete}
-        title="Confirm Delete"
-        message="Are you sure you want to delete this entry?"
-      />
+          {/* Income Section */}
+          <thead>
+            <tr className="bg-green-300">
+              <th colSpan={4} className="text-2xl p-2 text-center">
+                Income
+              </th>
+            </tr>
+          </thead>
+          <tbody className="text-lg">
+            {incomeRows.map((row, index) => (
+              <tr key={index}>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.account}
+                    onChange={(e) => handleChange(e, index, "account")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2">
+                  <input
+                    type="text"
+                    value={row.description}
+                    onChange={(e) => handleChange(e, index, "description")}
+                    className="border-none bg-transparent w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.income}
+                    onChange={(e) => handleChange(e, index, "income")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.expense}
+                    onChange={(e) => handleChange(e, index, "expense")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+
+          {/* Expense Section */}
+          <thead>
+            <tr className="bg-red-300">
+              <th colSpan={4} className="text-2xl p-2 text-center">
+                Expenses
+              </th>
+            </tr>
+          </thead>
+          <tbody className="text-lg">
+            {expenseRows.map((row, index) => (
+              <tr key={index}>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.account}
+                    onChange={(e) => handleChange(e, index, "account")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2">
+                  <input
+                    type="text"
+                    value={row.description}
+                    onChange={(e) => handleChange(e, index, "description")}
+                    className="border-none bg-transparent w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.income}
+                    onChange={(e) => handleChange(e, index, "income")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+                <td className="border border-gray-400 p-2 text-center">
+                  <input
+                    type="text"
+                    value={row.expense}
+                    onChange={(e) => handleChange(e, index, "expense")}
+                    className="border-none bg-transparent text-center w-full focus:outline-none"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default Table;
+export default TableComponent;

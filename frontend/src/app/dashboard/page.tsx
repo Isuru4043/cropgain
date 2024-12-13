@@ -1,5 +1,5 @@
 import React from "react";
-import SearchBar from "../../components/SearchBar";
+
 import CropOverview from "../../components/CropOverview";
 import FarmDetails from "../../components/FarmDetails";
 import CropGrowthMonitoring from "../../components/CropGrowthMonitoring";
@@ -24,7 +24,6 @@ const App: React.FC = () => {
   return (
     <div className="bg-gray-50 min-h-screen p-8">
       <header className="flex justify-between items-center mb-8">
-       
         <div
           className="text-gray-700 bg-blue-50 flex items-center space-x-4 font-roboto text-lg
           rounded-lg shadow-lg font-medium justify-center"
