@@ -1,12 +1,30 @@
-import React from "react";
+"use client";
+
+import React, { use } from "react";
 
 import CropOverview from "../../components/CropOverview";
 import FarmDetails from "../../components/FarmDetails";
 import CropGrowthMonitoring from "../../components/CropGrowthMonitoring";
 import MyCrops from "../../components/MyCrops";
 import Weather from "../../components/Weather";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const App: React.FC = () => {
+  const [crops, setCrops] = useState([]);
+
+  useEffect(() => {
+    const fetchCrops = async () => {
+      const { data } = await axios.get(
+        "http://localhost:5000/api/Accounts/incomePerCrop"
+      );
+      setCrops(data);
+    };
+
+    fetchCrops();
+    console.log("crops", crops);
+  });
+
   const cropData = {
     Tea: 7450,
     Coconut: 2700,
