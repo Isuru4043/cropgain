@@ -10,26 +10,55 @@ import Weather from "../../components/Weather";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const App: React.FC = () => {
-  const [crops, setCrops] = useState([]);
+interface Crop {
+  crop: string;
+  incomePerCrop: number;
+}
 
+// Defining the interface for the cropData state
+interface CropData {
+  [key: string]: number;
+}
+
+const App: React.FC = () => {
+  const [crops, setCrops] = useState<Crop[]>([]);
+  const [cropData, setCropData] = useState<CropData>({});
+
+  //fetching crops from the backend
   useEffect(() => {
     const fetchCrops = async () => {
-      const { data } = await axios.get(
-        "http://localhost:5000/api/Accounts/incomePerCrop"
-      );
-      setCrops(data);
+      try {
+        const { data } = await axios.get(
+          "http://localhost:5000/api/Accounts/incomePerCrop"
+        );
+        setCrops(data);
+      } catch (error) {
+        console.error("Error fetching crops:", error);
+      }
     };
-
     fetchCrops();
-    console.log("crops", crops);
-  });
+  }, []);
 
-  const cropData = {
-    Tea: 7450,
-    Coconut: 2700,
-    Cinnamon: 4500,
-    Other: 2800,
+  useEffect(() => {
+    if (crops.length > 0) {
+      const mappedData: CropData = {};
+      crops.forEach((crop) => {
+        mappedData[crop.crop] = crop.incomePerCrop;
+      });
+      setCropData(mappedData);
+      console.log("Mapped cropData:", mappedData);
+    }
+  }, [crops]);
+  let i = 0;
+  console.log("cropData", cropData);
+  console.log("crops", i);
+  i = i + 1;
+
+  const CropData = {
+    Tea: 42,
+    Coconut: 15,
+    Cinnamon: 25,
+    Other: 18,
   };
 
   const landData = {
@@ -53,7 +82,7 @@ const App: React.FC = () => {
 
       <main className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <section className="lg:col-span-2">
-          <CropOverview incomeData={cropData} landData={landData} />
+          <CropOverview incomeData={CropData} landData={landData} />
         </section>
 
         <section
