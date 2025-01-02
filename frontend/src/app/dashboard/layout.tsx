@@ -120,7 +120,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         )}
 
-Gayan Shaminda, [11/5/2024 1:10 PM]
+
 {isNotificationsOpen && (
           <div
             ref={notificationsRef}

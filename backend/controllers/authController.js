@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+
+
 const registerUser = async (req, res) => {
   const { username, password } = req.body;
 
@@ -30,8 +32,9 @@ const registerUser = async (req, res) => {
         res.json({ token });
       }
     );
-  } catch (error) {
-    res.status(500).send("Server error");
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server error" }); // Send error as JSON
   }
 };
 
@@ -65,7 +68,8 @@ const loginUser = async (req, res) => {
       }
     );
   } catch (error) {
-    res.status(500).send("Server error");
+    console.error(error.message);
+    res.status(500).json({ msg: "Server error" }); // Send error as JSON
   }
 };
 
