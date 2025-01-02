@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { ReactNode, useState, useRef, useEffect } from "react";
@@ -31,7 +30,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     );
     const formattedDate = localDate.toISOString().split("T")[0];
     router.push(`/add-event?date=${formattedDate}`);
-    
   };
 
   useEffect(() => {
@@ -89,27 +87,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <FontAwesomeIcon icon={faCog} />
             </Link>
 
-<button
-
- aria-label=""
- className="bg-yellow-400 rounded-full">
- 
-  
-</button>
-
-
-
-
+            <button
+              aria-label=""
+              className="bg-yellow-400 rounded-full"
+            ></button>
           </nav>
         </div>
-
-
-
       </header>
 
       <main className="flex-1 p-6 bg-white relative">
         {children}
-
         {isCalendarOpen && (
           <div
             ref={calendarRef}
@@ -120,13 +107,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         )}
 
-
+Gayan Shaminda, [11/5/2024 1:10 PM]
 {isNotificationsOpen && (
           <div
             ref={notificationsRef}
             className="absolute top-10 right-10 bg-white shadow-lg rounded-lg p-4 w-64 z-10"
-            style={{ width: "400px", }}
-            
+            style={{ width: "400px" }}
           >
             <h3 className="text-lg font-semibold text-center">Notifications</h3>
             <ul className="mt-2 space-y-2">
