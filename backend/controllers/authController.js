@@ -9,11 +9,13 @@ const registerUser = async (req, res) => {
   const { username, password } = req.body;
 
   try {
+    // Check if user already exists
     let user = await User.findOne({ username });
     if (user) {
       return res.status(400).json({ msg: "User already exists" });
     }
 
+    // Create new user (plain password, as hashing is handled in User schema)
     user = new User({ username, password });
     await user.save();
 
@@ -23,6 +25,7 @@ const registerUser = async (req, res) => {
       },
     };
 
+    // Generate JWT token
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -32,10 +35,12 @@ const registerUser = async (req, res) => {
         res.json({ token });
       }
     );
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ msg: "Server error" }); // Send error as JSON
-  }
+
+  } catch (error) {
+    console.error("Register error:", error);
+    res.status(500).send("Server error");
+
+  } 
 };
 
 const loginUser = async (req, res) => {
@@ -47,8 +52,17 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
+    // Debugging: Log user details
+    console.log("User found:", user);
+    console.log("Entered password:", password);
+    console.log("Hashed password from DB:", user.password);
+
+    // Compare the password entered with the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match result:", isMatch);
+
     if (!isMatch) {
+      console.log("Passwords do not match");
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
@@ -58,6 +72,7 @@ const loginUser = async (req, res) => {
       },
     };
 
+    // Generate JWT token
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -68,8 +83,10 @@ const loginUser = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ msg: "Server error" }); // Send error as JSON
+
+    console.error("Login error:", error);
+    res.status(500).send("Server error");
+
   }
 };
 
