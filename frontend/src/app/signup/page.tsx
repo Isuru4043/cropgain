@@ -1,8 +1,11 @@
-"use client"; 
+"use client";
 
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Signup: React.FC = () => {
+ 
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,7 +22,7 @@ const Signup: React.FC = () => {
     const data = await response.json();
     if (response.ok) {
       alert("Signup successful!");
-      // Redirect to login or other pages
+      router.push("/login");
     } else {
       alert(data.msg || "Something went wrong");
     }
@@ -29,20 +32,17 @@ const Signup: React.FC = () => {
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{
-        backgroundImage: "url('/assets/login-signup background.webp')", // Path to your background image
+        backgroundImage: "url('/assets/login-signup background.webp')",
       }}
     >
-      {/* Container for Form and Image */}
       <div className="relative w-full max-w-4xl p-0 bg-white shadow-lg rounded-lg">
-        {/* Right side - Image */}
         <img
           src="/assets/green-tea.jpg"
           alt="Plant background"
           className="absolute inset-0 object-cover w-full h-full rounded-lg"
-          style={{ zIndex: -1 }} // Ensure the image is behind other elements
+          style={{ zIndex: -1 }}
         />
 
-        {/* Signup Form */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="bg-white bg-opacity-90 shadow-lg w-full max-w-md rounded-lg p-6">
             <h2 className="text-2xl font-bold text-center mb-6">
