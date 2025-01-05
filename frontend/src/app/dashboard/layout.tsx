@@ -231,7 +231,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* User Profile Icon */}
             <div className="relative">
-              <Link href="/user/profile" aria-label="User Profile">
+              <Link href="/dashboard/User/profile" aria-label="User Profile">
                 <FontAwesomeIcon
                   icon={faUserCircle}
                   size="lg"
