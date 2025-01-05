@@ -36,11 +36,11 @@ export default function Home() {
 
       <div className="flex flex-col md:flex-row justify-between items-center w-full mt-14">
         <div className="text-left ml-8 font-fanwood mt-9">
-          <h1 className="text-8xl font-bold mb-4 px-20 mt-14 ">
+          <h1 className="text-8xl mb-4 px-20 mt-14 ">
             Make your <br />
             farm profitable!
           </h1>
-          <p className="text-2xl mb-8 px-20 mt-8">
+          <p className="text-xl mb-8 px-20 mt-8">
             Our deep respect for the land and its harvest is the legacy of
             <br />
             generations of farmers who put food on our tables, preserved
