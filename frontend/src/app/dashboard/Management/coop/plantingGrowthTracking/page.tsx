@@ -197,8 +197,7 @@ const PlantingGrowthTracking = () => {
     {
       id: 6,
       type: "Health Alert",
-      message:
-        "Papaya plants in Section F are experiencing water stress.",
+      message: "Papaya plants in Section F are experiencing water stress.",
       date: "2025-06-15",
     },
     {
@@ -328,7 +327,9 @@ const PlantingGrowthTracking = () => {
 
   // Function to handle delete
   const handleDelete = (recordId) => {
-    if (window.confirm("Are you sure you want to delete this planting record?")) {
+    if (
+      window.confirm("Are you sure you want to delete this planting record?")
+    ) {
       setPlantingRecords((prevRecords) =>
         prevRecords.filter((record) => record.id !== recordId)
       );
@@ -383,18 +384,18 @@ const PlantingGrowthTracking = () => {
   };
 
   return (
-    <div className="w-11/12 max-w-4xl mx-auto bg-white p-6 rounded-md shadow-md overflow-auto">
-      <div className="flex justify-between items-center mb-6">
+    <div className="w-full max-w-7xl mx-auto bg-white p-4 sm:p-6 lg:p-8 rounded-md shadow-md overflow-auto">
+      <div className="flex flex-col lg:flex-row justify-between items-center mb-6 space-y-4 lg:space-y-0">
         {/* Buttons */}
         <div className="flex space-x-2">
           <button
-            className="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800"
+            className="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800 transition"
             onClick={handleAddNewPlanting}
           >
             Add New Planting
           </button>
           <button
-            className="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800"
+            className="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800 transition"
             onClick={handleViewAllPlantings}
           >
             View All Plantings
@@ -403,7 +404,7 @@ const PlantingGrowthTracking = () => {
 
         {/* Search Bar */}
         {viewAll && (
-          <div className="w-1/2">
+          <div className="w-full lg:w-1/3">
             <input
               type="text"
               value={searchQuery}
@@ -420,8 +421,15 @@ const PlantingGrowthTracking = () => {
         <div>
           {/* Growth Progress Chart */}
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Growth Progress</h2>
-            <Line data={growthProgressData} />
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-center lg:text-left">
+              Growth Progress
+            </h2>
+            <div className="w-full h-64 sm:h-96">
+              <Line
+                data={growthProgressData}
+                options={{ maintainAspectRatio: false }}
+              />
+            </div>
           </div>
 
           {/* Planting Records Table */}
@@ -525,7 +533,9 @@ const PlantingGrowthTracking = () => {
 
           {/* Notifications */}
           <div className="mt-8">
-            <h2 className="text-2xl font-semibold mb-4">Notifications</h2>
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-center lg:text-left">
+              Notifications
+            </h2>
             <ul className="space-y-4">
               {notifications.map((notification) => (
                 <li
@@ -549,7 +559,7 @@ const PlantingGrowthTracking = () => {
             isOpen={modalIsOpen}
             onRequestClose={closeModal}
             contentLabel="Photo Modal"
-            className="max-w-3xl mx-auto mt-20 bg-white p-4 rounded-md shadow-lg outline-none"
+            className="max-w-lg sm:max-w-2xl mx-auto mt-20 bg-white p-4 rounded-md shadow-lg outline-none"
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
           >
             {currentPhoto && (
@@ -557,11 +567,11 @@ const PlantingGrowthTracking = () => {
                 <img
                   src={currentPhoto.url}
                   alt="Plant Growth"
-                  className="w-full h-auto mb-4"
+                  className="w-full h-auto mb-4 rounded-md"
                 />
                 <button
                   onClick={closeModal}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
                 >
                   Close
                 </button>
@@ -574,160 +584,167 @@ const PlantingGrowthTracking = () => {
           className="bg-gray-50 p-6 rounded-md shadow-md"
           onSubmit={handleFormSubmit}
         >
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-800 text-center lg:text-left">
             {editingRecord ? "Edit Planting" : "Add New Planting"}
           </h2>
 
-          {/* Crop Type */}
-          <div className="mb-4">
-            <label
-              htmlFor="cropType"
-              className="block text-gray-700 font-medium mb-1"
-            >
-              Crop Type
-            </label>
-            <select
-              id="cropType"
-              name="cropType"
-              required
-              defaultValue={editingRecord ? editingRecord.cropType : ""}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
-            >
-              <option value="">Select crop type</option>
-              <option value="Tea">Tea</option>
-              <option value="Coconut">Coconut</option>
-              <option value="Cinnamon">Cinnamon</option>
-              <option value="Mango">Mango</option>
-              <option value="Banana">Banana</option>
-              <option value="Papaya">Papaya</option>
-              <option value="Orange">Orange</option>
-              <option value="Avocado">Avocado</option>
-              <option value="Pineapple">Pineapple</option>
-              <option value="Guava">Guava</option>
-              {/* Add more options as needed */}
-            </select>
-          </div>
+          {/* Form Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Crop Type */}
+            <div>
+              <label
+                htmlFor="cropType"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Crop Type
+              </label>
+              <select
+                id="cropType"
+                name="cropType"
+                required
+                defaultValue={editingRecord ? editingRecord.cropType : ""}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+              >
+                <option value="">Select crop type</option>
+                <option value="Tea">Tea</option>
+                <option value="Coconut">Coconut</option>
+                <option value="Cinnamon">Cinnamon</option>
+                <option value="Mango">Mango</option>
+                <option value="Banana">Banana</option>
+                <option value="Papaya">Papaya</option>
+                <option value="Orange">Orange</option>
+                <option value="Avocado">Avocado</option>
+                <option value="Pineapple">Pineapple</option>
+                <option value="Guava">Guava</option>
+                {/* Add more options as needed */}
+              </select>
+            </div>
 
-          {/* Section */}
-          <div className="mb-4">
-            <label
-              htmlFor="section"
-              className="block text-gray-700 font-medium mb-1"
-            >
-              Section
-            </label>
-            <select
-              id="section"
-              name="section"
-              required
-              defaultValue={editingRecord ? editingRecord.section : ""}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
-            >
-              <option value="">Select section</option>
-              <option value="Section A">Section A</option>
-              <option value="Section B">Section B</option>
-              <option value="Section C">Section C</option>
-              <option value="Section D">Section D</option>
-              <option value="Section E">Section E</option>
-              <option value="Section F">Section F</option>
-              <option value="Section G">Section G</option>
-              <option value="Section H">Section H</option>
-              <option value="Section I">Section I</option>
-              <option value="Section J">Section J</option>
-              {/* Add more sections as needed */}
-            </select>
-          </div>
+            {/* Section */}
+            <div>
+              <label
+                htmlFor="section"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Section
+              </label>
+              <select
+                id="section"
+                name="section"
+                required
+                defaultValue={editingRecord ? editingRecord.section : ""}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+              >
+                <option value="">Select section</option>
+                <option value="Section A">Section A</option>
+                <option value="Section B">Section B</option>
+                <option value="Section C">Section C</option>
+                <option value="Section D">Section D</option>
+                <option value="Section E">Section E</option>
+                <option value="Section F">Section F</option>
+                <option value="Section G">Section G</option>
+                <option value="Section H">Section H</option>
+                <option value="Section I">Section I</option>
+                <option value="Section J">Section J</option>
+                {/* Add more sections as needed */}
+              </select>
+            </div>
 
-          {/* Planting Date */}
-          <div className="mb-4">
-            <label
-              htmlFor="plantingDate"
-              className="block text-gray-700 font-medium mb-1"
-            >
-              Planting Date
-            </label>
-            <input
-              id="plantingDate"
-              name="plantingDate"
-              type="date"
-              required
-              defaultValue={editingRecord ? editingRecord.plantingDate : ""}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
-            />
-          </div>
+            {/* Planting Date */}
+            <div>
+              <label
+                htmlFor="plantingDate"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Planting Date
+              </label>
+              <input
+                id="plantingDate"
+                name="plantingDate"
+                type="date"
+                required
+                defaultValue={editingRecord ? editingRecord.plantingDate : ""}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+              />
+            </div>
 
-          {/* Number of Plants */}
-          <div className="mb-4">
-            <label
-              htmlFor="numberOfPlants"
-              className="block text-gray-700 font-medium mb-1"
-            >
-              Number of Plants
-            </label>
-            <input
-              id="numberOfPlants"
-              name="numberOfPlants"
-              type="number"
-              min="1"
-              required
-              defaultValue={editingRecord ? editingRecord.numberOfPlants : ""}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
-              placeholder="Enter number of plants"
-            />
-          </div>
+            {/* Number of Plants */}
+            <div>
+              <label
+                htmlFor="numberOfPlants"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Number of Plants
+              </label>
+              <input
+                id="numberOfPlants"
+                name="numberOfPlants"
+                type="number"
+                min="1"
+                required
+                defaultValue={editingRecord ? editingRecord.numberOfPlants : ""}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                placeholder="Enter number of plants"
+              />
+            </div>
 
-          {/* Growth Stage */}
-          <div className="mb-4">
-            <label
-              htmlFor="growthStage"
-              className="block text-gray-700 font-medium mb-1"
-            >
-              Growth Stage
-            </label>
-            <select
-              id="growthStage"
-              name="growthStage"
-              required
-              defaultValue={editingRecord ? editingRecord.growthStage : "Germination"}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
-            >
-              <option value="">Select growth stage</option>
-              <option value="Germination">Germination</option>
-              <option value="Vegetative">Vegetative</option>
-              <option value="Flowering">Flowering</option>
-              <option value="Fruiting">Fruiting</option>
-              {/* Add more stages as needed */}
-            </select>
-          </div>
+            {/* Growth Stage */}
+            <div>
+              <label
+                htmlFor="growthStage"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Growth Stage
+              </label>
+              <select
+                id="growthStage"
+                name="growthStage"
+                required
+                defaultValue={
+                  editingRecord ? editingRecord.growthStage : "Germination"
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+              >
+                <option value="">Select growth stage</option>
+                <option value="Germination">Germination</option>
+                <option value="Vegetative">Vegetative</option>
+                <option value="Flowering">Flowering</option>
+                <option value="Fruiting">Fruiting</option>
+                {/* Add more stages as needed */}
+              </select>
+            </div>
 
-          {/* Health Status */}
-          <div className="mb-6">
-            <label
-              htmlFor="healthStatus"
-              className="block text-gray-700 font-medium mb-1"
-            >
-              Health Status
-            </label>
-            <select
-              id="healthStatus"
-              name="healthStatus"
-              required
-              defaultValue={editingRecord ? editingRecord.healthStatus : "Healthy"}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
-            >
-              <option value="">Select health status</option>
-              <option value="Healthy">Healthy</option>
-              <option value="At Risk">At Risk</option>
-              <option value="Unhealthy">Unhealthy</option>
-              {/* Add more statuses as needed */}
-            </select>
+            {/* Health Status */}
+            <div>
+              <label
+                htmlFor="healthStatus"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Health Status
+              </label>
+              <select
+                id="healthStatus"
+                name="healthStatus"
+                required
+                defaultValue={
+                  editingRecord ? editingRecord.healthStatus : "Healthy"
+                }
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+              >
+                <option value="">Select health status</option>
+                <option value="Healthy">Healthy</option>
+                <option value="At Risk">At Risk</option>
+                <option value="Unhealthy">Unhealthy</option>
+                {/* Add more statuses as needed */}
+              </select>
+            </div>
           </div>
 
           {/* Submit and Cancel Buttons */}
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
             <button
               type="submit"
-              className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800"
+              className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 transition"
             >
               {editingRecord ? "Update" : "Submit"}
             </button>
@@ -737,7 +754,7 @@ const PlantingGrowthTracking = () => {
                 setShowForm(false);
                 setEditingRecord(null);
               }}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400"
+              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition"
             >
               Cancel
             </button>
@@ -745,7 +762,7 @@ const PlantingGrowthTracking = () => {
         </form>
       ) : (
         <div>
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-800 text-center">
             Planting Schedule
           </h2>
           <div className="flex justify-center">
@@ -754,61 +771,68 @@ const PlantingGrowthTracking = () => {
                 onChange={setSelectedDate}
                 value={selectedDate}
                 tileContent={tileContent}
-                className="rounded-md shadow-md"
+                className="rounded-md shadow-md w-full"
               />
             </div>
           </div>
 
           <p className="text-gray-600 mt-4 text-center">
-            Selected Date: <span className="font-medium">{selectedDate.toDateString()}</span>
+            Selected Date:{" "}
+            <span className="font-medium">{selectedDate.toDateString()}</span>
           </p>
 
           {/* Plantings for Selected Date */}
           <div className="mt-6">
-            <h3 className="text-2xl font-semibold mb-4 text-center">
+            <h3 className="text-2xl sm:text-3xl font-semibold mb-4 text-center lg:text-left">
               Plantings on {selectedDate.toDateString()}
             </h3>
             <ul className="space-y-4">
               {plantingRecords
                 .filter(
                   (record) =>
-                    record.plantingDate === selectedDate.toISOString().split("T")[0]
+                    record.plantingDate ===
+                    selectedDate.toISOString().split("T")[0]
                 )
                 .map((record) => (
                   <li
                     key={record.id}
                     className="p-4 bg-green-50 rounded-md shadow-md"
                   >
-                    <p>
-                      <span className="font-medium">Crop Type:</span> {record.cropType}
-                    </p>
-                    <p>
-                      <span className="font-medium">Section:</span> {record.section}
-                    </p>
-                    <p>
-                      <span className="font-medium">Number of Plants:</span>{" "}
-                      {record.numberOfPlants}
-                    </p>
-                    <p>
-                      <span className="font-medium">Growth Stage:</span> {record.growthStage}
-                    </p>
-                    <p>
-                      <span className="font-medium">Health Status:</span>{" "}
-                      <span
-                        className={`px-2 py-1 rounded-full text-white ${
-                          record.healthStatus === "Healthy"
-                            ? "bg-green-500"
-                            : record.healthStatus === "At Risk"
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
-                        }`}
-                      >
-                        {record.healthStatus}
-                      </span>
-                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <p>
+                        <span className="font-medium">Crop Type:</span>{" "}
+                        {record.cropType}
+                      </p>
+                      <p>
+                        <span className="font-medium">Section:</span>{" "}
+                        {record.section}
+                      </p>
+                      <p>
+                        <span className="font-medium">Number of Plants:</span>{" "}
+                        {record.numberOfPlants}
+                      </p>
+                      <p>
+                        <span className="font-medium">Growth Stage:</span>{" "}
+                        {record.growthStage}
+                      </p>
+                      <p>
+                        <span className="font-medium">Health Status:</span>{" "}
+                        <span
+                          className={`px-2 py-1 rounded-full text-white ${
+                            record.healthStatus === "Healthy"
+                              ? "bg-green-500"
+                              : record.healthStatus === "At Risk"
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
+                          }`}
+                        >
+                          {record.healthStatus}
+                        </span>
+                      </p>
+                    </div>
                     {/* Photos */}
                     {record.photos.length > 0 && (
-                      <div className="mt-2 flex space-x-2">
+                      <div className="mt-4 flex flex-wrap gap-2">
                         {record.photos.map((photo, index) => (
                           <img
                             key={index}
@@ -823,16 +847,22 @@ const PlantingGrowthTracking = () => {
                   </li>
                 ))}
               {plantingRecords.filter(
-                (record) => record.plantingDate === selectedDate.toISOString().split("T")[0]
+                (record) =>
+                  record.plantingDate ===
+                  selectedDate.toISOString().split("T")[0]
               ).length === 0 && (
-                <p className="text-gray-600 text-center">No plantings on this date.</p>
+                <p className="text-gray-600 text-center">
+                  No plantings on this date.
+                </p>
               )}
             </ul>
           </div>
 
           {/* Notifications */}
           <div className="mt-8">
-            <h2 className="text-2xl font-semibold mb-4 text-center">Notifications</h2>
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-center lg:text-left">
+              Notifications
+            </h2>
             <ul className="space-y-4">
               {notifications.map((notification) => (
                 <li
@@ -856,7 +886,7 @@ const PlantingGrowthTracking = () => {
             isOpen={modalIsOpen}
             onRequestClose={closeModal}
             contentLabel="Photo Modal"
-            className="max-w-3xl mx-auto mt-20 bg-white p-4 rounded-md shadow-lg outline-none"
+            className="max-w-lg sm:max-w-2xl mx-auto mt-20 bg-white p-4 rounded-md shadow-lg outline-none"
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
           >
             {currentPhoto && (
@@ -864,11 +894,11 @@ const PlantingGrowthTracking = () => {
                 <img
                   src={currentPhoto.url}
                   alt="Plant Growth"
-                  className="w-full h-auto mb-4"
+                  className="w-full h-auto mb-4 rounded-md"
                 />
                 <button
                   onClick={closeModal}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
                 >
                   Close
                 </button>
