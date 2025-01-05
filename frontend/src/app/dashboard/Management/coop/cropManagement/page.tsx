@@ -21,7 +21,7 @@ interface Crop {
 }
 
 const CropManagement = () => {
-  const [showForm, setShowForm] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const [viewAll, setViewAll] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [crops, setCrops] = useState<Crop[]>([]);
@@ -36,7 +36,7 @@ const CropManagement = () => {
     optimalGrowingConditions: '',
     soilTypePreference: '',
     expectedYieldValue: '',
-    expectedYieldUnit: '',
+    expectedYieldUnit: 'kg/acre', 
     fertilizerType: '',
     fertilizerQuantity: '',
     fertilizerFrequency: '',
@@ -141,60 +141,71 @@ const CropManagement = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
-    const payload = {
-      cropName: formValues.cropName,
-      scientificName: formValues.scientificName,
-      cropType: formValues.cropType,
-      growthCycle: parseInt(formValues.growthCycle, 10),
-      optimalGrowingConditions: formValues.optimalGrowingConditions,
-      soilTypePreference: formValues.soilTypePreference,
-      expectedYieldValue: parseFloat(formValues.expectedYieldValue),
-      expectedYieldUnit: formValues.expectedYieldUnit,
-      fertilizerType: formValues.fertilizerType,
-      fertilizerQuantity: parseFloat(formValues.fertilizerQuantity),
-      fertilizerFrequency: formValues.fertilizerFrequency,
-      harvestFrequency: formValues.harvestFrequency,
-      compatibleCrops: formValues.compatibleCrops.split(",").map(s => s.trim()).filter(s => s !== ""),
-    };
-  
-    try {
-      let response;
-      if (selectedCrop) {
-        response = await fetch(`http://localhost:5000/api/crops/${selectedCrop._id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-          credentials: "include",
-        });
-      } else {
-        response = await fetch("http://localhost:5000/api/crops", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-          credentials: "include",
-        });
-      }
-  
-      if (!response.ok) {
-        throw new Error("Failed to submit crop data");
-      }
-  
-      alert("Crop updated successfully!");
-      setShowForm(false);
-      setSelectedCrop(null);
-      handleViewAllCrops(); // Refresh the list
-    } catch (error) {
-      console.error("Error submitting crop data:", error);
-      alert("Failed to submit crop data. Please try again.");
-    }
+  e.preventDefault();
+
+  const payload = {
+    cropName: formValues.cropName.trim(),
+    scientificName: formValues.scientificName.trim(),
+    cropType: formValues.cropType,
+    growthCycle: parseInt(formValues.growthCycle, 10),
+    optimalGrowingConditions: formValues.optimalGrowingConditions,
+    soilTypePreference: formValues.soilTypePreference,
+    expectedYieldValue: parseFloat(formValues.expectedYieldValue),
+    expectedYieldUnit: formValues.expectedYieldUnit,
+    fertilizerType: formValues.fertilizerType,
+    fertilizerQuantity: parseFloat(formValues.fertilizerQuantity),
+    fertilizerFrequency: formValues.fertilizerFrequency,
+    harvestFrequency: formValues.harvestFrequency,
+    compatibleCrops: formValues.compatibleCrops
+      ? formValues.compatibleCrops.split(",").map(s => s.trim()).filter(s => s !== "")
+      : []
   };
- 
+
+  console.log("Sending payload:", JSON.stringify(payload, null, 2));
+
+  try {
+    const response = await fetch("http://localhost:5000/api/crops", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      credentials: "include",
+    });
+
+    // Log the full response details
+    const responseText = await response.text();
+    console.log("Server Response Status:", response.status);
+    console.log("Server Response Headers:", Object.fromEntries(response.headers));
+    console.log("Server Response Body:", responseText);
+
+    if (!response.ok) {
+      let errorMessage;
+      try {
+        // Try to parse the response as JSON
+        const errorData = JSON.parse(responseText);
+        errorMessage = errorData.message || errorData.error || responseText;
+      } catch {
+        // If parsing fails, use the raw text
+        errorMessage = responseText;
+      }
+      throw new Error(`Server Error: ${errorMessage}`);
+    }
+
+    alert("Crop submitted successfully!");
+    setShowForm(false);
+    setSelectedCrop(null);
+    handleViewAllCrops();
+  } catch (error) {
+    console.error("Full error details:", {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
+    alert(`Failed to submit crop data: ${error.message}`);
+  }
+};
   //render crops
 
   const renderCrops = () => {
@@ -421,32 +432,35 @@ const CropManagement = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
-            Expected Yield per Unit Area
-          </label>
-          <div className="flex">
-            <input
-              type="number"
-              name="expectedYieldValue"
-              className="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-600"
-              placeholder="Enter yield"
-              value={formValues.expectedYieldValue}
-              onChange={(e) => setFormValues({ ...formValues, expectedYieldValue: e.target.value })}
-              required
-            />
-            <select
-              name="expectedYieldUnit"
-              className="border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-green-600"
-              value={formValues.expectedYieldUnit}
-              onChange={(e) => setFormValues({ ...formValues, expectedYieldUnit: e.target.value })}
-              required
-            >
-              <option value="kg/acre">kg/acre</option>
-              <option value="tons/hectare">tons/hectare</option>
-              <option value="kg/hectare">kg/hectare</option>
-            </select>
-          </div>
-        </div>
+  <label className="block text-gray-700 font-medium mb-1">
+    Expected Yield per Unit Area
+  </label>
+  <div className="flex">
+    <input
+      type="number"
+      name="expectedYieldValue"
+      className="w-2/3 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-600"
+      placeholder="Enter yield"
+      value={formValues.expectedYieldValue}
+      onChange={(e) => setFormValues({ ...formValues, expectedYieldValue: e.target.value })}
+      required
+    />
+    <select
+      name="expectedYieldUnit"
+      className="w-1/3 px-4 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-green-600"
+      value={formValues.expectedYieldUnit}
+      onChange={(e) => setFormValues({ ...formValues, expectedYieldUnit: e.target.value })}
+      required
+    >
+      <option value="">Select unit</option>
+      <option value="kg/acre">kg/acre</option>
+      <option value="tons/hectare">tons/hectare</option>
+      <option value="kg/hectare">kg/hectare</option>
+    </select>
+  </div>
+</div>
+
+
 
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">

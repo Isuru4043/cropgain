@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pie, Bar } from "react-chartjs-2"; // For charts (Pie and Bar)
 import "chart.js/auto"; // Required for Chart.js
 
@@ -8,188 +8,93 @@ export default function LandManagement() {
   const [selectedSection, setSelectedSection] = useState("Section A");
   const [showForm, setShowForm] = useState(false); // State for Add Crop form visibility
   const [showSummary, setShowSummary] = useState(false); // State for View Summary modal
-
+  
   const [cropsData, setCropsData] = useState({
-    "Section A": [
-      {
-        crop: "Coconut",
-        area: "5 ha",
-        plantingDate: "2025-01-01",
-        harvestDate: "2025-06-01",
-        numberOfPlants: 100, // Added field
-      },
-      {
-        crop: "Banana",
-        area: "2 ha",
-        plantingDate: "2025-03-01",
-        harvestDate: "2025-09-01",
-        numberOfPlants: null, // Not applicable
-      },
-      {
-        crop: "Mango",
-        area: "3 ha",
-        plantingDate: "2025-04-15",
-        harvestDate: "2025-10-15",
-        numberOfPlants: null, // Not applicable
-      },
-    ],
-    "Section B": [
-      {
-        crop: "Cinnamon",
-        area: "3 ha",
-        plantingDate: "2025-02-15",
-        harvestDate: "2025-07-15",
-        numberOfPlants: null,
-      },
-      {
-        crop: "Pepper",
-        area: "1.5 ha",
-        plantingDate: "2025-04-01",
-        harvestDate: "2025-10-01",
-        numberOfPlants: null,
-      },
-      {
-        crop: "Turmeric",
-        area: "2 ha",
-        plantingDate: "2025-05-10",
-        harvestDate: "2025-11-10",
-        numberOfPlants: null,
-      },
-    ],
-    "Section C": [
-      {
-        crop: "Tea",
-        area: "4 ha",
-        plantingDate: "2025-03-20",
-        harvestDate: "2025-08-20",
-        numberOfPlants: null,
-      },
-      {
-        crop: "Rubber",
-        area: "3.5 ha",
-        plantingDate: "2025-06-05",
-        harvestDate: "2026-06-05",
-        numberOfPlants: null,
-      },
-    ],
-    "Section D": [
-      {
-        crop: "Coffee",
-        area: "2.5 ha",
-        plantingDate: "2025-02-25",
-        harvestDate: "2025-09-25",
-        numberOfPlants: null,
-      },
-      {
-        crop: "Cardamom",
-        area: "1.8 ha",
-        plantingDate: "2025-04-15",
-        harvestDate: "2025-10-15",
-        numberOfPlants: null,
-      },
-      {
-        crop: "Ginger",
-        area: "2 ha",
-        plantingDate: "2025-05-20",
-        harvestDate: "2025-11-20",
-        numberOfPlants: null,
-      },
-    ],
-    "Section E": [
-      {
-        crop: "Avocado",
-        area: "3 ha",
-        plantingDate: "2025-01-10",
-        harvestDate: "2025-07-10",
-        numberOfPlants: null,
-      },
-      {
-        crop: "Papaya",
-        area: "2 ha",
-        plantingDate: "2025-03-05",
-        harvestDate: "2025-09-05",
-        numberOfPlants: null,
-      },
-      {
-        crop: "Guava",
-        area: "2.5 ha",
-        plantingDate: "2025-04-25",
-        harvestDate: "2025-10-25",
-        numberOfPlants: null,
-      },
-    ],
+    "Section A": [],
+    "Section B": [],
+    "Section C": [],
+    "Section D": [],
+    "Section E": [],
   });
 
   const landUsageData = {
-    labels: ["Used", "Unused"],
-    datasets: [
-      {
-        data: [75, 25],
-        backgroundColor: ["#4CAF50", "#FFCE56"],
-      },
-    ],
-  };
-
-  const summaryBarData = {
     labels: ["Section A", "Section B", "Section C", "Section D", "Section E"],
     datasets: [
       {
-        label: "Land Area (ha)",
+        label: "Land Usage",
         data: [
-          cropsData["Section A"].reduce(
-            (sum, crop) => sum + parseFloat(crop.area),
+          cropsData["Section A"]?.reduce(
+            (sum, crop) => sum + parseFloat(crop.area || 0),
             0
-          ),
-          cropsData["Section B"].reduce(
-            (sum, crop) => sum + parseFloat(crop.area),
+          ) || 0,
+          cropsData["Section B"]?.reduce(
+            (sum, crop) => sum + parseFloat(crop.area || 0),
             0
-          ),
-          cropsData["Section C"].reduce(
-            (sum, crop) => sum + parseFloat(crop.area),
+          ) || 0,
+          cropsData["Section C"]?.reduce(
+            (sum, crop) => sum + parseFloat(crop.area || 0),
             0
-          ),
-          cropsData["Section D"].reduce(
-            (sum, crop) => sum + parseFloat(crop.area),
+          ) || 0,
+          cropsData["Section D"]?.reduce(
+            (sum, crop) => sum + parseFloat(crop.area || 0),
             0
-          ),
-          cropsData["Section E"].reduce(
-            (sum, crop) => sum + parseFloat(crop.area),
+          ) || 0,
+          cropsData["Section E"]?.reduce(
+            (sum, crop) => sum + parseFloat(crop.area || 0),
             0
-          ),
+          ) || 0,
         ],
-        backgroundColor: "#4CAF50",
-      },
-      {
-        label: "Number of Plants",
-        data: [
-          cropsData["Section A"]
-            .filter((crop) => crop.numberOfPlants)
-            .reduce((sum, crop) => sum + crop.numberOfPlants, 0),
-          cropsData["Section B"]
-            .filter((crop) => crop.numberOfPlants)
-            .reduce((sum, crop) => sum + crop.numberOfPlants, 0),
-          cropsData["Section C"]
-            .filter((crop) => crop.numberOfPlants)
-            .reduce((sum, crop) => sum + crop.numberOfPlants, 0),
-          cropsData["Section D"]
-            .filter((crop) => crop.numberOfPlants)
-            .reduce((sum, crop) => sum + crop.numberOfPlants, 0),
-          cropsData["Section E"]
-            .filter((crop) => crop.numberOfPlants)
-            .reduce((sum, crop) => sum + crop.numberOfPlants, 0),
-        ],
-        backgroundColor: "#2196F3",
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#FF9800"],
       },
     ],
   };
+  
+  
+
+  
+
+useEffect(() => {
+  fetch("http://localhost:5000/api/crops")
+    .then((response) => response.json())
+    .then((data) => setCropsData(data))
+    .catch((error) => console.error("Error fetching crops data:", error));
+}, []);
+
+  
+
+const summaryBarData = {
+  labels: ["Section A", "Section B", "Section C", "Section D", "Section E"],
+  datasets: [
+    {
+      label: "Land Area (ha)",
+      data: ["Section A", "Section B", "Section C", "Section D", "Section E"].map(
+        (section) =>
+          cropsData[section]?.reduce((sum, crop) => sum + parseFloat(crop.area || 0), 0) || 0
+      ),
+      backgroundColor: "#4CAF50",
+    },
+    {
+      label: "Number of Plants",
+      data: ["Section A", "Section B", "Section C", "Section D", "Section E"].map(
+        (section) =>
+          cropsData[section]?.filter((crop) => crop.numberOfPlants)
+            .reduce((sum, crop) => sum + crop.numberOfPlants, 0) || 0
+      ),
+      backgroundColor: "#2196F3",
+    },
+  ],
+};
+
 
   const handleAddCrop = () => {
     setShowForm(true);
   };
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
+  //handleFormSubmit function
 
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+  
     const formData = new FormData(event.target);
     const cropName = formData.get("cropName");
     const isPlantCountRequired = cropName.toLowerCase() === "coconut"; // Example condition
@@ -201,15 +106,82 @@ export default function LandManagement() {
       numberOfPlants: isPlantCountRequired
         ? parseInt(formData.get("numberOfPlants"), 10)
         : null,
+      section: selectedSection, // Add selected section for backend reference
     };
-
-    setCropsData((prevData) => ({
-      ...prevData,
-      [selectedSection]: [...prevData[selectedSection], newCrop],
-    }));
-
-    setShowForm(false); // Close the form after submission
+  
+    try {
+      const response = await fetch("/api/crops", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newCrop),
+      });
+  
+      if (!response.ok) throw new Error("Failed to add crop");
+  
+      const updatedCropsData = await response.json();
+      setCropsData(updatedCropsData);
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error adding crop:", error);
+    }
   };
+
+  //handleDeleteCrop function
+
+  const handleDeleteCrop = async (cropId) => {
+    try {
+      const response = await fetch(`/api/crops/${cropId}`, {
+        method: "DELETE",
+      });
+  
+      if (!response.ok) throw new Error("Failed to delete crop");
+  
+      const updatedCropsData = await response.json();
+      setCropsData(updatedCropsData);
+    } catch (error) {
+      console.error("Error deleting crop:", error);
+    }
+  };
+
+
+  //Edit Crop function
+  const handleEditCrop = async (event, cropId) => {
+    event.preventDefault();
+  
+    const formData = new FormData(event.target);
+    const updatedCrop = {
+      crop: formData.get("cropName"),
+      area: `${formData.get("area")} ha`,
+      plantingDate: formData.get("plantingDate"),
+      harvestDate: formData.get("harvestDate"),
+      numberOfPlants: formData.get("numberOfPlants")
+        ? parseInt(formData.get("numberOfPlants"), 10)
+        : null,
+    };
+  
+    try {
+      const response = await fetch(`/api/crops/${cropId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedCrop),
+      });
+  
+      if (!response.ok) throw new Error("Failed to update crop");
+  
+      const updatedCropsData = await response.json();
+      setCropsData(updatedCropsData);
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error updating crop:", error);
+    }
+  };
+  
+  
+  
 
   return (
     <div className="flex-1 p-6 bg-white">
@@ -217,12 +189,14 @@ export default function LandManagement() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Land Management</h1>
         <div className="space-x-4">
-          <button
-            onClick={handleAddCrop}
-            className="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800"
-          >
-            Add New Crop
-          </button>
+        <button
+  onClick={handleAddCrop}
+  className="bg-green-700 text-white px-4 py-2 rounded-md hover:bg-green-800"
+  aria-label="Add new crop"
+>
+  Add New Crop
+</button>
+
           <button
             onClick={() => setShowSummary(true)} // Show Summary Modal
             className="bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800"
@@ -261,43 +235,48 @@ export default function LandManagement() {
             <tr>
               <th className="px-4 py-2 text-left">Crop Name</th>
               <th className="px-4 py-2 text-left">Area</th>
-              <th className="px-4 py-2 text-left">Number of Plants</th>{" "}
-              {/* New Column */}
+              <th className="px-4 py-2 text-left">Number of Plants</th>
+              
               <th className="px-4 py-2 text-left">Planting Date</th>
               <th className="px-4 py-2 text-left">Harvest Date</th>
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
+
+
           <tbody>
-            {cropsData[selectedSection].length > 0 ? (
-              cropsData[selectedSection].map((crop, index) => (
-                <tr key={index} className="hover:bg-gray-100 border-b">
-                  <td className="px-4 py-2">{crop.crop}</td>
-                  <td className="px-4 py-2">{crop.area}</td>
-                  <td className="px-4 py-2">
-                    {crop.numberOfPlants !== null ? crop.numberOfPlants : "N/A"}
-                  </td>{" "}
-                  {/* Display Number of Plants */}
-                  <td className="px-4 py-2">{crop.plantingDate}</td>
-                  <td className="px-4 py-2">{crop.harvestDate}</td>
-                  <td className="px-4 py-2">
-                    <button className="text-blue-600 hover:underline mr-2">
-                      Edit
-                    </button>
-                    <button className="text-red-600 hover:underline">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="text-center px-4 py-2 text-gray-500">
-                  No crops assigned yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
+  {(cropsData[selectedSection] || []).length > 0 ? (
+    cropsData[selectedSection].map((crop, index) => (
+      <tr key={index} className="hover:bg-gray-100 border-b">
+        <td className="px-4 py-2">{crop.crop}</td>
+        <td className="px-4 py-2">{crop.area}</td>
+        <td className="px-4 py-2">
+          {crop.numberOfPlants !== null ? crop.numberOfPlants : "N/A"}
+        </td>
+        <td className="px-4 py-2">{crop.plantingDate}</td>
+        <td className="px-4 py-2">{crop.harvestDate}</td>
+        <td className="px-4 py-2">
+          <button className="text-blue-600 hover:underline mr-2">
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteCrop(crop.id)}
+            className="text-red-600 hover:underline"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan={6} className="text-center px-4 py-2 text-gray-500">
+        No crops assigned yet.
+      </td>
+    </tr>
+  )}
+</tbody>
+
         </table>
       </div>
 
@@ -324,7 +303,7 @@ export default function LandManagement() {
                   <th className="px-4 py-2 text-left">Total Area</th>
                   <th className="px-4 py-2 text-left">
                     Total Number of Plants
-                  </th>{" "}
+                  </th>
                   {/* New Column */}
                 </tr>
               </thead>
@@ -337,7 +316,7 @@ export default function LandManagement() {
                       {cropsData[section].reduce(
                         (sum, crop) => sum + parseFloat(crop.area),
                         0
-                      )}{" "}
+                      )}
                       ha
                     </td>
                     <td className="px-4 py-2">
@@ -345,7 +324,7 @@ export default function LandManagement() {
                         .filter((crop) => crop.numberOfPlants)
                         .reduce((sum, crop) => sum + crop.numberOfPlants, 0) ||
                         "N/A"}
-                    </td>{" "}
+                    </td>
                     {/* Display Total Number of Plants */}
                   </tr>
                 ))}
