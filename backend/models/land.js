@@ -2,12 +2,13 @@
 const mongoose = require("mongoose");
 
 const cropSchema = new mongoose.Schema({
-  crop: { type: String, required: true },
-  area: { type: String, required: true }, // Area in hectares
+  cropNameLand: { type: String, required: true }, 
+  area: { type: String, required: true },
   plantingDate: { type: Date, required: true },
   harvestDate: { type: Date, required: true },
   numberOfPlants: { type: Number, default: null },
 });
+
 
 const landSchema = new mongoose.Schema({
   section: { type: String, required: true, unique: true }, // E.g., Section A, Section B

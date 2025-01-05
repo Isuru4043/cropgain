@@ -4,17 +4,21 @@ const router = express.Router();
 const Land = require("../models/land");
 
 // Get all land sections
-router.get("/", async (req, res) => {
+router.get("/land", async (req, res) => {
   try {
     const lands = await Land.find();
-    res.json(lands);
+    const transformedData = lands.reduce((acc, land) => {
+      acc[land.section] = land.crops;
+      return acc;
+    }, {});
+    res.json(transformedData);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
 // Get a specific land section
-router.get("/:section", async (req, res) => {
+router.get("/land/:section", async (req, res) => {
   try {
     const land = await Land.findOne({ section: req.params.section });
     if (!land) return res.status(404).json({ message: "Section not found" });
@@ -23,6 +27,7 @@ router.get("/:section", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 // Add a new land section
 router.post("/", async (req, res) => {
@@ -45,7 +50,7 @@ router.post("/:section/crops", async (req, res) => {
     if (!land) return res.status(404).json({ message: "Section not found" });
 
     const newCrop = {
-      crop: req.body.crop,
+      cropNameLand: req.body.cropNameLand,
       area: req.body.area,
       plantingDate: req.body.plantingDate,
       harvestDate: req.body.harvestDate,
@@ -70,7 +75,7 @@ router.put("/:section/crops/:cropId", async (req, res) => {
     if (!crop) return res.status(404).json({ message: "Crop not found" });
 
     // Update fields
-    crop.crop = req.body.crop || crop.crop;
+    crop.cropNameLand = req.body.cropNameLand || crop.cropNameLand;
     crop.area = req.body.area || crop.area;
     crop.plantingDate = req.body.plantingDate || crop.plantingDate;
     crop.harvestDate = req.body.harvestDate || crop.harvestDate;
@@ -86,21 +91,31 @@ router.put("/:section/crops/:cropId", async (req, res) => {
   }
 });
 
-// Delete a crop from a section
+
+
+const { ObjectId } = require("mongoose").Types;
+
 router.delete("/:section/crops/:cropId", async (req, res) => {
   try {
-    const land = await Land.findOne({ section: req.params.section });
-    if (!land) return res.status(404).json({ message: "Section not found" });
+    const cropId = new ObjectId(req.params.cropId); // Convert cropId to ObjectId
 
-    const crop = land.crops.id(req.params.cropId);
-    if (!crop) return res.status(404).json({ message: "Crop not found" });
+    // Find the land section and pull the crop from the crops array
+    const result = await Land.findOneAndUpdate(
+      { section: req.params.section }, // Find the section
+      { $pull: { crops: { _id: cropId } } }, // Remove the crop with the matching _id
+      { new: true } // Return the updated document
+    );
 
-    crop.remove();
-    await land.save();
-    res.json({ message: "Crop deleted" });
+    if (!result) {
+      return res.status(404).json({ message: "Section not found" });
+    }
+
+    res.json({ message: "Crop deleted successfully", land: result });
   } catch (err) {
+    console.error("Error in delete route:", err);
     res.status(400).json({ message: err.message });
   }
 });
+
 
 module.exports = router;
