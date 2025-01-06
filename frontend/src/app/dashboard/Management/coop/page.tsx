@@ -1,14 +1,11 @@
 "use client";
-
-import React, { useState } from "react";
+import React from "react";
 
 export default function Page() {
   return (
-    <div className="h-screen flex bg-background font-roboto">
-      {/* Left Sidebar */}
 
-      <div>Hi there</div>
-      {/* Content Area */}
+    <div className="bg-gray-400">
+      Hi there
     </div>
   );
 }

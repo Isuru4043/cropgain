@@ -1,21 +1,18 @@
 "use client";
-
 import React, { ReactNode } from "react";
 import Link from "next/link";
 
-interface coopStateLayoutProps {
+interface CoopStateLayoutProps {
   children: ReactNode;
 }
 
-export default function coopStateLayout({ children }: coopStateLayoutProps) {
-  // Dummy data for crops
-
+export default function CoopStateLayout({ children }: CoopStateLayoutProps) {
   return (
     <div className="h-screen flex bg-background font-roboto">
       {/* Left Sidebar */}
-      <div className="w-1/5 bg-green-800 text-white h-full">
+      <div className="w-1/5 min-w-fit bg-green-800 text-white h-full">
         <nav>
-          <ul className="space-y-2 pl-4">
+          <ul className="space-y-4 pl-4 pt-4">
             <li>
               <Link
                 href="/dashboard/Management/coop/cropManagement"
@@ -64,28 +61,13 @@ export default function coopStateLayout({ children }: coopStateLayoutProps) {
                 Labor Management
               </Link>
             </li>
-            <li>
-              <Link
-                href="/dashboard/Management/coop/resourceManagement"
-                className="cursor-pointer hover:text-gray-300 p-2 rounded-md block"
-              >
-                Resource Management
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard/Management/coop/integrationCapabilities"
-                className="cursor-pointer hover:text-gray-300 p-2 rounded-md block"
-              >
-                Integration Capabilities
-              </Link>
-            </li>
           </ul>
         </nav>
       </div>
-
       {/* Content Area */}
-      {children}
+      <div className="flex-1 h-full bg-gray-100 p-4">
+        {children}
+      </div>
     </div>
   );
 }
