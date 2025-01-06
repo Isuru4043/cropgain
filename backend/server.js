@@ -9,7 +9,6 @@ const incomeRoutes = require("./routes/income");
 const eventRoutes = require("./routes/eventroute");
 const cropManagementRoutes = require("./routes/croproutes"); 
 const authRoutes = require("./routes/auth");
-
 const landRoute = require('./routes/landRoute');
 
 

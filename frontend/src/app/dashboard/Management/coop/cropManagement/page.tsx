@@ -21,7 +21,7 @@ interface Crop {
 }
 
 const CropManagement = () => {
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
   const [viewAll, setViewAll] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [crops, setCrops] = useState<Crop[]>([]);

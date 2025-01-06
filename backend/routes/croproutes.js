@@ -52,7 +52,7 @@ router.get('/:id', async (req, res) => {
 //Post
 
 router.post(
-  "/",
+  "/",  // Make sure this matches your frontend URL
   [
     body("cropName").notEmpty().withMessage("Crop name is required"),
     body("cropType").notEmpty().withMessage("Crop type is required"),
@@ -61,8 +61,7 @@ router.post(
     body("expectedYieldUnit").notEmpty().withMessage("Expected yield unit is required"),
     body("fertilizerType").notEmpty().withMessage("Fertilizer type is required"),
     body("fertilizerQuantity").isNumeric().withMessage("Fertilizer quantity must be a number"),
-    body("fertilizerFrequency").notEmpty().withMessage("Fertilizer frequency is required"),
-    body("compatibleCrops").isArray().withMessage("Compatible crops must be an array")
+    body("fertilizerFrequency").notEmpty().withMessage("Fertilizer frequency is required")
   ],
   async (req, res) => {
     try {
@@ -88,14 +87,13 @@ router.post(
         growthCycle: Number(req.body.growthCycle),
         optimalGrowingConditions: req.body.optimalGrowingConditions || '',
         soilTypePreference: req.body.soilTypePreference || '',
-        expectedYieldValue: Number(req.body.expectedYieldValue),
+        expectedYieldValue: req.body.expectedYieldValue,
         expectedYieldUnit: req.body.expectedYieldUnit,
         fertilizerType: req.body.fertilizerType || '',
         fertilizerQuantity: req.body.fertilizerQuantity ? Number(req.body.fertilizerQuantity) : null,
         fertilizerFrequency: req.body.fertilizerFrequency || '',
         harvestFrequency: req.body.harvestFrequency || '',
-        // Handle compatibleCrops as an array directly
-        compatibleCrops: Array.isArray(req.body.compatibleCrops) ? req.body.compatibleCrops : []
+        compatibleCrops: req.body.compatibleCrops ? req.body.compatibleCrops.split(',').map(crop => crop.trim()) : []
       };
 
       console.log('Preparing to save crop data:', cropData);
