@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Pie, Bar } from "react-chartjs-2"; // For charts (Pie and Bar)
-import "chart.js/auto"; // Required for Chart.js
+import { Pie, Bar } from "react-chartjs-2";
+import "chart.js/auto"; 
 
 export default function LandManagement() {
   const [selectedSection, setSelectedSection] = useState("Section A");
-  const [showForm, setShowForm] = useState(false); // State for Add Crop form visibility
-  const [showSummary, setShowSummary] = useState(false); // State for View Summary modal
-  const [editingCrop, setEditingCrop] = useState(null); // Track the crop being edited
+  const [showForm, setShowForm] = useState(false); 
+  const [showSummary, setShowSummary] = useState(false); 
+  const [editingCrop, setEditingCrop] = useState(null);
 
   const [cropsData, setCropsData] = useState({
     "Section A": [],
