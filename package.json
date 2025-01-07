@@ -1,5 +1,9 @@
 {
   "dependencies": {
-    "react-image-crop": "^11.0.7"
+    "react-image-crop": "^11.0.7",
+    "recharts": "^2.15.0"
+  },
+  "devDependencies": {
+    "@types/recharts": "^1.8.29"
   }
 }

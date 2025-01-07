@@ -15,19 +15,19 @@ const PathSelection = () => {
       title: "State - Kotapola",
       image: "/assets/state.jpg",
       color: "bg-purple-500",
-      path: "/state-kotapola",
+      path: "/dashboard/Accounts/State",
     },
     {
-      title: "Tourist Bangalore",
+      title: "Tourist Bunglow",
       image: "/assets/hotel.jpeg",
       color: "bg-green-500",
-      path: "/tourist-bangalore",
+      path: "/dashboard/Accounts/Tourist",
     },
     {
       title: "Nursery",
       image: "/assets/nursary.jpeg",
       color: "bg-orange-500",
-      path: "/nursery",
+      path: "/dashboard/Accounts/Nursery",
     },
   ];
 
