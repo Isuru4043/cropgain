@@ -10,10 +10,13 @@ const eventRoutes = require("./routes/eventroute");
 const cropManagementRoutes = require("./routes/croproutes"); 
 const authRoutes = require("./routes/auth");
 
+
 const landRoute = require('./routes/landRoute')
 const plantingRoutes = require('./routes/plants');
 const fertilizerRoutes = require("./routes/fertilizerTasks");
 const laborRoutes = require("./routes/laborRoute");
+
+
 
 
 
@@ -51,9 +54,12 @@ app.use("/api/events", eventRoutes);
 app.use("/api/crops", cropManagementRoutes);
 app.use("/api/lands", landRoute);
 
+
 app.use('/api/plantings', plantingRoutes);
 app.use("/api/fertilizertasks", fertilizerRoutes);
 app.use("/api/labors", laborRoutes);
+
+
 
 
 
