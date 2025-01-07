@@ -1,6 +1,22 @@
 "use client"
 import React, { useState, useEffect } from "react"
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from "recharts"
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+} from "recharts"
 import SOPLTable from './SOPLTable';
 import SOPLHistory from './SOPLHistory';
 
@@ -119,6 +135,13 @@ function IncomeTable() {
     { month: 'Apr', income: 56 },
     { month: 'May', income: 61 },
   ])
+  const [stackedData] = useState([
+    { month: 'Jan', cropA: 30, cropB: 20 },
+    { month: 'Feb', cropA: 40, cropB: 12 },
+    { month: 'Mar', cropA: 35, cropB: 13 },
+    { month: 'Apr', cropA: 50, cropB: 6 },
+    { month: 'May', cropA: 45, cropB: 16 },
+  ])
 
   const COLORS = ["#0ea5e9", "#22c55e", "#eab308", "#ef4444", "#8b5cf6"]
 
@@ -139,7 +162,6 @@ function IncomeTable() {
       )
     );
   };
-  
 
   useEffect(() => {
     const total = crops.reduce((acc, crop) => acc + crop.income, 0)
@@ -151,7 +173,7 @@ function IncomeTable() {
   }
 
   const deleteRow = (index: number) => {
-    const cropName = crops[index].name
+    const cropName = crops[index].name || "Crop"
     const updatedCrops = crops.filter((_, i) => i !== index)
     setCrops(updatedCrops)
     showNotification(`${cropName} has been deleted successfully`, "success")
@@ -161,7 +183,7 @@ function IncomeTable() {
     const updatedCrops = [...crops]
     if (updatedCrops[index].isEditable) {
       updatedCrops[index].isEditable = false
-      showNotification(`${updatedCrops[index].name} has been updated successfully`, "success")
+      showNotification(`${updatedCrops[index].name || "Crop"} has been updated successfully`, "success")
     } else {
       updatedCrops[index].isEditable = true
     }
@@ -169,61 +191,64 @@ function IncomeTable() {
   }
 
   const ActionBar = () => (
-    <div className="flex justify-between items-center mb-6">
+    <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
       <div className="flex items-center space-x-4">
         <div className="relative">
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
           <input
             type="text"
             placeholder="Search crops..."
-            className="pl-10 pr-4 py-2 border rounded-lg"
+            className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <button 
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${filterActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100'}`}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors 
+            ${filterActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 hover:bg-gray-200'}`}
           onClick={() => setFilterActive(!filterActive)}
         >
-          <span>⚡ Filter</span>
+          <span>Filter</span>
         </button>
       </div>
       <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2 border rounded-lg px-4 py-2">
+        <div className={`flex items-center space-x-2 border rounded-lg px-4 py-2 transition-all duration-300
+          ${filterActive ? "bg-blue-50" : "bg-gray-100"}`}>
           <span className="text-gray-500">📅</span>
           <input type="date" className="outline-none" value={dateRange.start} onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))} />
           <span>to</span>
           <input type="date" className="outline-none" value={dateRange.end} onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))} />
         </div>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg">
-          <span>⬇️ Export</span>
+        <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+          <span>Export</span>
         </button>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg">
-          <span>⬆️ Import</span>
+        <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+          <span>Import</span>
         </button>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg">
-          <span>🖨️ Print</span>
+        <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+          <span>Print</span>
         </button>
       </div>
     </div>
   )
 
   const StatCards = () => (
-    <div className="grid grid-cols-4 gap-6 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
       {[
-        { title: "Total Income", value: `$${totalIncome.toFixed(2)}`, change: "+12.5%" },
-        { title: "Active Crops", value: crops.length, change: "+2" },
-        { title: "Avg. Income/Crop", value: `$${(totalIncome / crops.length).toFixed(2)}`, change: "+5.3%" },
-        { title: "Top Performer", value: crops.reduce((max, crop) => crop.income > max.income ? crop : max, crops[0]).name, change: "No change" }
+        { title: "Total Income", value: `$${totalIncome.toFixed(2)}`, change: "+12.5%", icon: "💰" },
+        { title: "Active Crops", value: crops.length, change: "+2", icon: "🌾" },
+        { title: "Avg. Income/Crop", value: `$${(totalIncome / crops.length).toFixed(2)}`, change: "+5.3%", icon: "📈" },
+        { title: "Top Performer", value: crops.reduce((max, crop) => crop.income > max.income ? crop : max, crops[0]).name || "N/A", change: "No change", icon: "🏆" }
       ].map((stat, index) => (
-        <Card key={index}>
-          <CardContent className="pt-6">
+        <Card key={index} className="flex items-center p-4">
+          <div className="text-3xl mr-4">{stat.icon}</div>
+          <div>
             <p className="text-sm text-gray-500">{stat.title}</p>
-            <h3 className="text-2xl font-bold mt-2">{stat.value}</h3>
-            <p className={`text-sm mt-2 ${stat.change.includes('+') ? 'text-green-500' : 'text-gray-500'}`}>
+            <h3 className="text-2xl font-bold mt-1">{stat.value}</h3>
+            <p className={`text-sm mt-1 ${stat.change.includes('+') ? 'text-green-500' : 'text-red-500'}`}>
               {stat.change} from last period
             </p>
-          </CardContent>
+          </div>
         </Card>
       ))}
     </div>
@@ -239,20 +264,26 @@ function IncomeTable() {
     return (
       <Card className="mt-6">
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-wrap">
             <CardTitle>Income Breakdown</CardTitle>
-            <div className="space-x-2">
+            <div className="space-x-2 mt-2 sm:mt-0">
               <button
                 onClick={() => setActiveChart("pie")}
-                className={`px-3 py-1 rounded ${activeChart === "pie" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                className={`px-3 py-1 rounded ${activeChart === "pie" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
               >
                 Pie Chart
               </button>
               <button
                 onClick={() => setActiveChart("bar")}
-                className={`px-3 py-1 rounded ${activeChart === "bar" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                className={`px-3 py-1 rounded ${activeChart === "bar" ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
               >
                 Bar Chart
+              </button>
+              <button
+                onClick={() => setActiveChart("doughnut")}
+                className={`px-3 py-1 rounded ${activeChart === "doughnut" ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+              >
+                Doughnut Chart
               </button>
             </div>
           </div>
@@ -278,12 +309,31 @@ function IncomeTable() {
                   <Tooltip />
                   <Legend verticalAlign="bottom" height={36} />
                 </PieChart>
+              ) : activeChart === "doughnut" ? (
+                <PieChart>
+                  <Pie
+                    data={data}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={120}
+                    dataKey="value"
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {data.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend verticalAlign="bottom" height={36} />
+                </PieChart>
               ) : (
                 <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
+                  <Legend />
                   <Bar dataKey="income" fill="#3b82f6">
                     {data.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -311,8 +361,59 @@ function IncomeTable() {
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
+              <Legend />
               <Line type="monotone" dataKey="income" stroke="#3b82f6" strokeWidth={2} />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const AreaTrendChart = () => (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle>Cumulative Income Over Time</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={trendData}>
+              <defs>
+                <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Area type="monotone" dataKey="income" stroke="#3b82f6" fillOpacity={1} fill="url(#colorIncome)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const StackedBarChartComponent = () => (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle>Monthly Income by Crop</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={stackedData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="cropA" stackId="a" fill="#8884d8" />
+              <Bar dataKey="cropB" stackId="a" fill="#82ca9d" />
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
@@ -335,9 +436,9 @@ function IncomeTable() {
           <CardTitle>Income from Crops</CardTitle>
           <button
             onClick={addRow}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
-            + Add Crop
+            <span>+ Add Crop</span>
           </button>
         </CardHeader>
         <CardContent>
@@ -345,60 +446,65 @@ function IncomeTable() {
             <table className="w-full border-collapse border border-gray-200">
               <thead>
                 <tr className="bg-gray-50 text-left">
-                  <th className="p-2 border border-gray-300">Crop Name</th>
-                  <th className="p-2 border border-gray-300">Income</th>
+                  <th className="p-2 border border-gray-300 cursor-pointer" onClick={() => {/* Implement sorting */}}>Crop Name</th>
+                  <th className="p-2 border border-gray-300 cursor-pointer" onClick={() => {/* Implement sorting */}}>Income</th>
                   <th className="p-2 border border-gray-300">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {crops.map((crop, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="p-2 border border-gray-300">
-                      <input
-                        type="text"
-                        value={crop.name}
-                        onChange={(e) => handleInputChange(index, "name", e.target.value)}
-                        className="w-full px-2 py-1 border rounded"
-                        readOnly={!crop.isEditable}
-                      />
-                    </td>
-                    <td className="p-2 border border-gray-300">
-                      <input
-                        type="number"
-                        value={crop.income}
-
-                        onChange={(e) => handleInputChange(index, "income", e.target.value)}
-                        className="w-full px-2 py-1 border rounded"
-                        readOnly={!crop.isEditable}
-                      />
-                    </td>
-                    <td className="p-2 border border-gray-300">
-                      {!crop.isEditable ? (
-                        <>
+                {crops
+                  .filter(crop => crop.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .filter(crop => {
+                    // Implement date range filtering if applicable
+                    return true;
+                  })
+                  .map((crop, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="p-2 border border-gray-300">
+                        <input
+                          type="text"
+                          value={crop.name}
+                          onChange={(e) => handleInputChange(index, "name", e.target.value)}
+                          className="w-full px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          readOnly={!crop.isEditable}
+                        />
+                      </td>
+                      <td className="p-2 border border-gray-300">
+                        <input
+                          type="number"
+                          value={crop.income}
+                          onChange={(e) => handleInputChange(index, "income", e.target.value)}
+                          className="w-full px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          readOnly={!crop.isEditable}
+                        />
+                      </td>
+                      <td className="p-2 border border-gray-300">
+                        {!crop.isEditable ? (
+                          <>
+                            <button
+                              onClick={() => editRow(index)}
+                              className="mr-2 text-blue-500 hover:text-blue-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteRow(index)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        ) : (
                           <button
                             onClick={() => editRow(index)}
-                            className="mr-2 text-blue-500 hover:text-blue-700"
+                            className="text-green-500 hover:text-green-700"
                           >
-                            Edit
+                            Save
                           </button>
-                          <button
-                            onClick={() => deleteRow(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            Delete
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => editRow(index)}
-                          className="text-green-500 hover:text-green-700"
-                        >
-                          Save
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 <tr className="bg-gray-50">
                   <td className="p-2 border border-gray-300 font-bold">Total Income</td>
                   <td className="p-2 border border-gray-300">{totalIncome.toFixed(2)}</td>
@@ -410,9 +516,14 @@ function IncomeTable() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <CropCharts />
         <TrendChart />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <AreaTrendChart />
+        <StackedBarChartComponent />
       </div>
     </div>
   )
@@ -424,11 +535,9 @@ function IncomeTable() {
   const renderHistoryTab = () => (
      <SOPLHistory />
   );
-    
-  
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-screen">
       <Tabs defaultValue="income" className="w-full">
         <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-6">
           <TabsTrigger value="income" onClick={() => setActiveTab("income")}>Income</TabsTrigger>
