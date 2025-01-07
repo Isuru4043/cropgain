@@ -244,7 +244,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 bg-white relative">
+      <main className="flex-1  bg-white relative">
         {children}
 
         {/* Calendar Dropdown */}
