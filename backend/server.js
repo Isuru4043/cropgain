@@ -9,8 +9,7 @@ const incomeRoutes = require("./routes/income");
 const eventRoutes = require("./routes/eventroute");
 const cropManagementRoutes = require("./routes/croproutes"); 
 const authRoutes = require("./routes/auth");
-const landRoute = require('./routes/landRoute')
-const plantingRoutes = require('./routes/plants');
+const landRoute = require('./routes/landRoute');
 
 
 const app = express();
@@ -44,7 +43,6 @@ app.use("/api/Accounts/incomePerCrop", incomeRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/crops", cropManagementRoutes);
 app.use("/api/lands", landRoute);
-app.use('/api/plantings', plantingRoutes);
 
 
 const PORT = process.env.PORT || 5000;
