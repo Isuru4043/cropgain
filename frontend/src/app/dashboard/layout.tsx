@@ -225,7 +225,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </button>
 
             {/* Settings Link */}
-            <Link href="/settings" className="hover:text-green-300">
+            <Link href="/dashboard/Settings" className="hover:text-green-300">
               <FontAwesomeIcon icon={faCog} />
             </Link>
 
