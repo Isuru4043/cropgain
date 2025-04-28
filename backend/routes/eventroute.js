@@ -105,6 +105,27 @@ router.delete("/:id", async (req, res) => {
 });
 
 
+//Notofication Part
+
+// Get events for the current date for notification
+router.get("/notifications", async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];  // Get today's date in "YYYY-MM-DD" format
+    const events = await Event.find({ date: today }); // Fetch events for today
+    
+    if (events.length === 0) {
+      return res.status(200).json({ message: "No events for today" });
+    }
+
+    res.status(200).json({ events });  // Return events to be displayed as notifications
+  } catch (error) {
+    console.error("Error fetching today's events:", error);
+    res.status(500).json({ message: "Error fetching today's events" });
+  }
+});
+
+
+
 
 
 
