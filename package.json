@@ -6,6 +6,7 @@
     "recharts": "^2.15.0"
   },
   "devDependencies": {
-    "@types/recharts": "^1.8.29"
+    "@types/recharts": "^1.8.29",
+    "mongodb-memory-server": "^10.1.4"
   }
 }

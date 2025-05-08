@@ -1,9 +1,9 @@
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const mongoose = require('mongoose');
+const { MongoMemoryServer } = require("mongodb-memory-server");
+const mongoose = require("mongoose");
 
 // Set up test environment variables
-process.env.NODE_ENV = 'test';
-process.env.JWT_SECRET = 'test-secret-key';
+process.env.NODE_ENV = "test";
+process.env.JWT_SECRET = "test-secret-key";
 
 let mongod;
 
@@ -12,8 +12,8 @@ beforeAll(async () => {
   if (!mongod) {
     mongod = await MongoMemoryServer.create({
       binary: {
-        version: '6.0.2'  // Specify a version to avoid downloading latest
-      }
+        version: "6.0.2", // Specify a version to avoid downloading latest
+      },
     });
     const uri = mongod.getUri();
     await mongoose.connect(uri);
@@ -25,7 +25,7 @@ afterEach(async () => {
   if (mongoose.connection.readyState !== 0) {
     const collections = await mongoose.connection.db.collections();
     await Promise.all(
-      collections.map(collection => collection.deleteMany({}))
+      collections.map((collection) => collection.deleteMany({}))
     );
   }
 });
