@@ -1,12 +1,15 @@
-'use client';
+"use client";
 
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { ReactNode, useEffect, useState } from 'react';
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import * as React from "react";
 
-export default function ThemeProvider({ children }: { children: ReactNode }) {
-  // Prevents hydration mismatch
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+interface ThemeProviderProps {
+  children: React.ReactNode;
+}
+
+const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
   if (!mounted) return null;
 
   return (
@@ -14,4 +17,6 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </NextThemesProvider>
   );
-}
+};
+
+export default ThemeProvider;

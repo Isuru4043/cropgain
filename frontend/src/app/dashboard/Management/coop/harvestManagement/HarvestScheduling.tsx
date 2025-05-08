@@ -153,6 +153,8 @@ const HarvestScheduling = () => {
       estimatedYield: harvestToEdit.estimatedYield,
       yieldUnit: "kg",
       notes: harvestToEdit.notes,
+      date: harvestToEdit.date,
+      actualYield: harvestToEdit.actualYield,
     });
     setSelectedDate(harvestToEdit.date);
     setShowForm(true);
