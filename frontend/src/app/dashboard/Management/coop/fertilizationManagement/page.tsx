@@ -38,6 +38,17 @@ ChartJS.register(
 // Adjust if your app root is different
 // For Next.js applications
 
+// Define interfaces at the top level
+interface FertilizerTask {
+  id: number;
+  cropType: string;
+  fertilizerType: string;
+  quantity: number;
+  date: Date;
+  method: string;
+  recurring: boolean;
+}
+
 const FertilizationManagementPage = () => {
   // State for Dropdown Menu
   useEffect(() => {
@@ -49,6 +60,11 @@ const FertilizationManagementPage = () => {
   const [selectedModule, setSelectedModule] = useState<string>(
     "Fertilizer Scheduling"
   );
+  
+  // State variables for fertilizer management
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
 
   // ---------- 1. Fertilizer Scheduling ----------
   interface FertilizerTask {
