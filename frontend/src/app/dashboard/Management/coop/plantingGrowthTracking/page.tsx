@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Calendar } from "react-calendar"; // Ensure to install react-calendar
 import "react-calendar/dist/Calendar.css"; // Import calendar styles
 import { Line } from "react-chartjs-2"; // For charts
@@ -8,16 +8,47 @@ import "chart.js/auto"; // Required for Chart.js
 import Modal from "react-modal"; // For photo viewing
 import Image from "next/image"; // Import Next.js Image component
 
-export default function PlantingGrowthTracking() {
+interface PlantingRecord {
+  id: number;
+  cropType: string;
+  section: string;
+  plantingDate: string;
+  numberOfPlants: number;
+  growthStage: string;
+  healthStatus: string;
+  growthMetrics: {
+    days: number;
+    height: number;
+  };
+  photos: Array<{
+    url: string;
+    date: string;
+  }>;
+}
+
+interface Notification {
+  id: number;
+  type: string;
+  message: string;
+  date: string;
+}
+
+const PlantingGrowthTracking = () => {
   const [showForm, setShowForm] = useState(false);
   const [viewAll, setViewAll] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [selectedDate, setSelectedDate] = useState(new Date()); // Selected date on calendar
   const [modalIsOpen, setModalIsOpen] = useState(false); // Modal state
-  const [currentPhoto, setCurrentPhoto] = useState(null); // Currently viewed photo
-  const [editingRecord, setEditingRecord] = useState(null); // Record being edited
+  const [currentPhoto, setCurrentPhoto] = useState<{
+    url: string;
+    date: string;
+  } | null>(null); // Currently viewed photo
+  const [editingRecord, setEditingRecord] = useState<PlantingRecord | null>(
+    null
+  ); // Record being edited
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [plantingRecords, setPlantingRecords] = useState([
+  const [plantingRecords, setPlantingRecords] = useState<PlantingRecord[]>([
     // Extended Dummy Data
     {
       id: 1,
@@ -161,7 +192,7 @@ export default function PlantingGrowthTracking() {
     // Add more records as needed
   ]);
 
-  const [notifications, setNotifications] = useState([
+  const [notifications, setNotifications] = useState<Notification[]>([
     // Extended Dummy Notifications
     {
       id: 1,
@@ -234,7 +265,9 @@ export default function PlantingGrowthTracking() {
   useEffect(() => {
     if (typeof document !== "undefined") {
       const appElement = document.querySelector("#__next") || document.body;
-      Modal.setAppElement(appElement);
+      if (appElement instanceof HTMLElement) {
+        Modal.setAppElement(appElement);
+      }
     }
   }, []);
 
@@ -251,17 +284,26 @@ export default function PlantingGrowthTracking() {
     setSearchQuery(""); // Reset search when viewing all plantings
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.target;
-    const newPlanting = {
+    const form = e.currentTarget;
+    const formElements = form.elements as typeof form.elements & {
+      cropType: HTMLInputElement;
+      section: HTMLInputElement;
+      plantingDate: HTMLInputElement;
+      numberOfPlants: HTMLInputElement;
+      growthStage: HTMLInputElement;
+      healthStatus: HTMLInputElement;
+    };
+
+    const newPlanting: PlantingRecord = {
       id: editingRecord ? editingRecord.id : Date.now(),
-      cropType: form.cropType.value,
-      section: form.section.value,
-      plantingDate: form.plantingDate.value,
-      numberOfPlants: parseInt(form.numberOfPlants.value, 10),
-      growthStage: form.growthStage.value,
-      healthStatus: form.healthStatus.value,
+      cropType: formElements.cropType.value,
+      section: formElements.section.value,
+      plantingDate: formElements.plantingDate.value,
+      numberOfPlants: parseInt(formElements.numberOfPlants.value, 10),
+      growthStage: formElements.growthStage.value,
+      healthStatus: formElements.healthStatus.value,
       growthMetrics: editingRecord
         ? editingRecord.growthMetrics
         : { days: 0, height: 0 },
@@ -284,14 +326,17 @@ export default function PlantingGrowthTracking() {
     setShowForm(false);
   };
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
   // Function to handle photo uploads
-  const handlePhotoUpload = (e, plantingId) => {
+  const handlePhotoUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    plantingId: number
+  ) => {
     const files = e.target.files;
-    if (files.length === 0) return;
+    if (!files || files.length === 0) return;
 
     const newPhotos = Array.from(files).map((file) => ({
       url: URL.createObjectURL(file), // Temporary URL, replace with actual upload URL in production
@@ -308,7 +353,7 @@ export default function PlantingGrowthTracking() {
   };
 
   // Function to open modal with selected photo
-  const openModal = (photo) => {
+  const openModal = (photo: { url: string; date: string }) => {
     setCurrentPhoto(photo);
     setModalIsOpen(true);
   };
@@ -320,14 +365,14 @@ export default function PlantingGrowthTracking() {
   };
 
   // Function to handle edit
-  const handleEdit = (record) => {
+  const handleEdit = (record: PlantingRecord) => {
     setEditingRecord(record);
     setShowForm(true);
     setViewAll(false);
   };
 
   // Function to handle delete
-  const handleDelete = (recordId) => {
+  const handleDelete = (recordId: number) => {
     if (
       window.confirm("Are you sure you want to delete this planting record?")
     ) {
@@ -372,7 +417,7 @@ export default function PlantingGrowthTracking() {
   );
 
   // Function to tile content in the calendar
-  const tileContent = ({ date, view }) => {
+  const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view === "month") {
       const formattedDate = date.toISOString().split("T")[0];
       const hasPlanting = plantingRecords.some(
@@ -381,6 +426,12 @@ export default function PlantingGrowthTracking() {
       return hasPlanting ? (
         <div className="dot bg-green-500 rounded-full w-2 h-2 mt-1 mx-auto"></div>
       ) : null;
+    }
+  };
+
+  const handleDateChange = (value: Date | [Date, Date] | null) => {
+    if (value instanceof Date) {
+      setSelectedDate(value);
     }
   };
 
@@ -521,7 +572,7 @@ export default function PlantingGrowthTracking() {
                 ) : (
                   <tr>
                     <td
-                      colSpan="8"
+                      colSpan={8}
                       className="text-center px-4 py-2 text-gray-600"
                     >
                       No plantings found matching "{searchQuery}"
@@ -769,7 +820,7 @@ export default function PlantingGrowthTracking() {
           <div className="flex justify-center">
             <div className="w-full max-w-md">
               <Calendar
-                onChange={setSelectedDate}
+                onChange={handleDateChange}
                 value={selectedDate}
                 tileContent={tileContent}
                 className="rounded-md shadow-md w-full"
@@ -909,7 +960,9 @@ export default function PlantingGrowthTracking() {
         </div>
       )}
       <div className="text-center">
-        <p>Select a plant and click &quot;Track Growth&quot; to begin monitoring.</p>
+        <p>
+          Select a plant and click &quot;Track Growth&quot; to begin monitoring.
+        </p>
       </div>
 
       <div className="relative">
@@ -923,4 +976,6 @@ export default function PlantingGrowthTracking() {
       </div>
     </div>
   );
-}
+};
+
+export default PlantingGrowthTracking;

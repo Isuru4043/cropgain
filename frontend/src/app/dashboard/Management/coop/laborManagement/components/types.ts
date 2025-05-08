@@ -4,4 +4,6 @@ export interface Worker {
   epfNumber: string;
   skills: string[];
   dateJoined: string;
+  age: number;
+  role: string;
 }

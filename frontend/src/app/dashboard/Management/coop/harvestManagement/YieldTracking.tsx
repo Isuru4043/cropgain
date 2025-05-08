@@ -7,6 +7,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
@@ -47,11 +48,16 @@ const YieldTracking = () => {
     ],
   };
 
-  const barChartOptions = {
+  const barChartOptions: ChartOptions<"bar"> = {
     responsive: true,
     plugins: {
-      legend: { position: "top" },
-      title: { display: true, text: "Crop Yield Comparison" },
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Crop Yield Comparison",
+      },
     },
     scales: {
       y: {

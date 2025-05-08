@@ -202,28 +202,32 @@ const AddEvent: React.FC = () => {
         prompt("Enter new event name:", eventToUpdate.name) ||
         eventToUpdate.name,
       time:
-        prompt("Enter new event time:", eventToUpdate.time?.toISOString()) ||
-        eventToUpdate.time,
+        new Date(
+          prompt("Enter new event time:", eventToUpdate.time?.toISOString()) ||
+            ""
+        ) || eventToUpdate.time,
     };
 
     try {
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/events/${eventToUpdate.id}`,
+        `${process.env.BACKEND_URL}/api/events/${eventToUpdate._id}`,
         {
-          method: "PUT", // Make sure you use PUT for updating
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: updatedEvent.name,
-            time: updatedEvent.time?.toISOString(),
+            time:
+              updatedEvent.time instanceof Date
+                ? updatedEvent.time.toISOString()
+                : null,
           }),
         }
       );
 
       if (response.ok) {
         const updatedEventData = await response.json();
-        // Update the event locally after successful update
         const newEventInputs = [...eventInputs];
-        newEventInputs[index] = updatedEventData; // Replace the old event with updated event data
+        newEventInputs[index] = updatedEventData;
         setEventInputs(newEventInputs);
       } else {
         console.error("Failed to update event, status:", response.status);

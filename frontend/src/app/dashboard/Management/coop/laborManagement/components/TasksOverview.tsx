@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 interface Task {
+  _id?: string; // Make _id optional for new tasks
   title: string;
   due: string;
   desc: string;
