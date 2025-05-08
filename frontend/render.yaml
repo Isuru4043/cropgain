@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: cropgain-frontend
+    env: node
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BACKEND_URL
+        value: https://cropgain-backend.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        value: https://cropgain-backend.onrender.com
+    healthCheckPath: /
+    autoDeploy: true

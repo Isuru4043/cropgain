@@ -2,6 +2,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import Link from "next/link";
+import Image from 'next/image';
 
 const PathSelection = () => {
   const options = [
@@ -48,10 +49,11 @@ const PathSelection = () => {
               <div className="relative rounded-2xl bg-white overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 cursor-pointer hover:scale-105">
                 {/* Image Container */}
                 <div className="aspect-[4/3] relative ">
-                  <img
+                  <Image
                     src={option.image}
                     alt={option.title}
-                    className="w-full h-full object-cover"
+                    layout="fill"
+                    objectFit="cover"
                   />
                   {/* Overlay on hover */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300" />

@@ -6,8 +6,9 @@ import "react-calendar/dist/Calendar.css"; // Import calendar styles
 import { Line } from "react-chartjs-2"; // For charts
 import "chart.js/auto"; // Required for Chart.js
 import Modal from "react-modal"; // For photo viewing
+import Image from "next/image"; // Import Next.js Image component
 
-const PlantingGrowthTracking = () => {
+export default function PlantingGrowthTracking() {
   const [showForm, setShowForm] = useState(false);
   const [viewAll, setViewAll] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
@@ -907,8 +908,19 @@ const PlantingGrowthTracking = () => {
           </Modal>
         </div>
       )}
+      <div className="text-center">
+        <p>Select a plant and click &quot;Track Growth&quot; to begin monitoring.</p>
+      </div>
+
+      <div className="relative">
+        <Image
+          src="/path/to/image.jpg"
+          alt="Plant growth tracking"
+          width={500}
+          height={300}
+          className="w-full h-auto"
+        />
+      </div>
     </div>
   );
-};
-
-export default PlantingGrowthTracking;
+}

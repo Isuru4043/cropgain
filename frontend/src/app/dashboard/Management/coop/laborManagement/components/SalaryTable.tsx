@@ -590,7 +590,7 @@ export default function SalaryTable() {
                   colSpan={6}
                   className="py-8 px-4 text-center text-sm text-gray-500"
                 >
-                  Select a month and click "Calculate Salaries" to view data.
+                  Select a month and click &quot;Calculate Salaries&quot; to view data.
                 </td>
               </tr>
             )}
@@ -723,7 +723,7 @@ export default function SalaryTable() {
           </>
         ) : (
           <p className="text-center py-8 text-sm text-gray-500">
-            Select a month and click "Calculate Salaries" to view data.
+            Select a month and click &quot;Calculate Salaries&quot; to view data.
           </p>
         )}
       </div>
