@@ -3,9 +3,9 @@ export default function Footer() {
     <footer className="bg-teal-900 text-white py-8 w-full text-lg">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-4">
         <div className="flex flex-col items-center md:items-start mb-6 md:mb-0">
-          <div className="text-left text-3xl -mt-24 font-bold mb-4 ml-8">
+          <h1 className="text-left text-3xl -mt-24 font-bold mb-4 ml-8">
             CropGain
-          </div>
+          </h1>
           <div className="flex space-x-4 ml-8">
             <a href="#" aria-label="LinkedIn">
               <img src="/assets/linkedin.svg" alt="LinkedIn" className="h-6" />

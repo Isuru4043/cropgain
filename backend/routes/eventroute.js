@@ -3,8 +3,6 @@ const router = express.Router();
 const Event = require('../models/Eventmodels'); 
 const mongoose = require('mongoose');
 
-
-
 // Save events
 router.post("/", async (req, res) => {
   const { date, events } = req.body;
@@ -14,98 +12,93 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ message: "Invalid request body. 'date' and 'events' (array) are required." });
   }
 
-  // Ensure that each event time is in a valid format before saving
-  const formattedEvents = events.map(event => {
-    if (event.time && typeof event.time === 'string') {
-      // Convert the event time to an ISO string if it's in string format
-      event.time = new Date(`1970-01-01T${event.time}`).toISOString().split('T')[1]; // Store only the time part
-    }
-    return event;
-  });
-
+  // Validate time format and format events
   try {
-    // Check if an event with the same date already exists
-    let eventData = await Event.findOne({ date });
-
-    if (eventData) {
-      // Update existing events
-      eventData.events = formattedEvents;
-    } else {
-      // Create a new event document
-      eventData = new Event({ date, events: formattedEvents });
-    }
-
-    // Save the event data to MongoDB
-    await eventData.save();
-    res.status(200).json({ message: "Events saved successfully" });
-  } catch (error) {
-    console.error("Error saving events:", error);
-    res.status(500).json({ message: "Failed to save events" });
-  }
-});
-
-
-
-// Fetch events
-router.get("/", async (req, res) => {
-  const { date } = req.query;
-
-  // Input validation
-  if (!date) {
-    return res.status(400).json({ message: "Date query parameter is required" });
-  }
-
-  try {
-    // Find events for the given date
-    const eventData = await Event.findOne({ date });
-
-    if (!eventData) {
-      return res.status(200).json({ events: [] });
-    }
-
-    // Return the events with properly formatted time
-    const eventsWithFormattedTime = eventData.events.map(event => {
-      if (event.time) {
-        // Convert time back to a string that can be parsed by Date object
-        event.time = event.time.split(':').length === 2 ? `00:${event.time}` : event.time;
+    const formattedEvents = events.map(event => {
+      if (!event.name || !event.time) {
+        throw new Error('Event name and time are required');
       }
-      return event;
+
+      // Validate time format (HH:mm)
+      const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+      if (!timeRegex.test(event.time)) {
+        throw new Error('Invalid time format. Use HH:mm format (24-hour)');
+      }
+
+      return {
+        name: event.name,
+        time: event.time
+      };
     });
 
-    res.status(200).json({ events: eventsWithFormattedTime });
+    // Create and save new event
+    const eventData = new Event({ date, events: formattedEvents });
+    const savedEvent = await eventData.save();
+    res.status(201).json(savedEvent);
   } catch (error) {
-    console.error("Error fetching events:", error);
-    res.status(500).json({ message: "Failed to fetch events" });
+    res.status(400).json({ message: error.message });
   }
 });
 
-//Delete
+// Get events
+router.get("/", async (req, res) => {
+  try {
+    const { date } = req.query;
+    let query = {};
+    
+    if (date) {
+      query.date = date;
+    }
 
+    const events = await Event.find(query);
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching events", error: error.message });
+  }
+});
+
+// Update event
+router.put("/:id", async (req, res) => {
+  try {
+    const { events } = req.body;
+    
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid event ID" });
+    }
+
+    const updatedEvent = await Event.findByIdAndUpdate(
+      req.params.id,
+      { events },
+      { new: true }
+    );
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.json(updatedEvent);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating event", error: error.message });
+  }
+});
+
+// Delete event
 router.delete("/:id", async (req, res) => {
   try {
-      const { id } = req.params;
-      const { date } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid event ID" });
+    }
 
-      console.log("Delete Request Received:", { id, date });
+    const deletedEvent = await Event.findByIdAndDelete(req.params.id);
 
-      const eventData = await Event.findOneAndUpdate(
-          { date },
-          { $pull: { events: { _id: id } } },
-          { new: true }
-      );
+    if (!deletedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
 
-      if (!eventData) {
-          return res.status(404).json({ message: "Event not found" });
-      }
-
-      res.json({ message: "Event deleted successfully", events: eventData.events });
+    res.json({ message: "Event deleted successfully" });
   } catch (error) {
-      res.status(500).json({ message: "Error deleting event", error });
+    res.status(500).json({ message: "Error deleting event", error: error.message });
   }
 });
-
-
-
-
 
 module.exports = router;

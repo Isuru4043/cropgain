@@ -16,10 +16,9 @@ const plantingRoutes = require('./routes/plants');
 const fertilizerRoutes = require("./routes/fertilizerTasks");
 const laborRoutes = require("./routes/laborRoute");
 
-
-
-
-
+const workerRoutes = require("./routes/workerRoutes");
+const taskRoutes = require("./routes/taskRoutes");
+const salaryRoutes = require("./routes/salaryRoutes");
 
 
 const app = express();
@@ -59,9 +58,9 @@ app.use('/api/plantings', plantingRoutes);
 app.use("/api/fertilizertasks", fertilizerRoutes);
 app.use("/api/labors", laborRoutes);
 
-
-
-
+app.use("/api/workers", workerRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/salaries", salaryRoutes);
 
 
 

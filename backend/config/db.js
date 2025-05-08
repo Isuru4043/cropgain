@@ -1,15 +1,21 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://Isuru4043:PBsNnYHJoq2xgOEl@cluster0.q3h6k.mongodb.net/cropgain",
-      {}
-    );
-    console.log("MongoDB connected");
+    // If we're in test environment, skip the actual connection as it's handled by mongodb-memory-server
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+    
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
-    process.exit(1);
+    // Only exit in non-test environment
+    if (process.env.NODE_ENV !== 'test') {
+      process.exit(1);
+    }
   }
 };
 
