@@ -16,9 +16,9 @@ const nextConfig = {
     BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:5000',
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
   },
-
-  // Enable static exports for hosting on Render
-  output: 'standalone',
+  // Configure output for Vercel deployment
+  output: 'export',
+  distDir: 'build',
 
   // Disable image optimization warnings in development
   typescript: {
