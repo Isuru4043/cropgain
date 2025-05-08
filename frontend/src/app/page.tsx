@@ -4,6 +4,7 @@ import Goal from "../components/Goal";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import Image from "next/image";
 import React from "react";
 
 export default function Home() {
@@ -36,7 +37,7 @@ export default function Home() {
 
       <div className="flex flex-col md:flex-row justify-between items-center w-full mt-14">
         <div className="text-left ml-8 font-fanwood mt-9">
-          <h1 className="text-8xl mb-4 px-20 mt-14 ">
+          <h1 className="text-8xl mb-4 px-20 mt-14">
             Make your <br />
             farm profitable!
           </h1>
@@ -53,11 +54,13 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mr-36 mt-4">
-          <img
+        <div className="mr-36 mt-4 relative w-[435px] h-[435px]">
+          <Image
             src="/assets/leave.png"
             alt="leave"
-            className="w-[435px] h-auto object-cover"
+            fill
+            style={{ objectFit: "contain" }}
+            priority
           />
         </div>
       </div>

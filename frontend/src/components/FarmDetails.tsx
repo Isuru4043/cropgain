@@ -1,38 +1,41 @@
 "use client";
 
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
+import Image from "next/image";
 
 const farmData = [
   {
-    img: '/assets/co-state.jpg',
-    name: 'COOP tea state',
-    cropHealth: 'Good',
-    sowingDate: 'Feb 21, 2024',
-    harvestDate: 'Apr 25, 2024',
+    img: "/assets/co-state.jpg",
+    name: "COOP tea state",
+    cropHealth: "Good",
+    sowingDate: "Feb 21, 2024",
+    harvestDate: "Apr 25, 2024",
   },
   {
-    img: '/assets/state.jpg',
-    name: 'State - Kotapola',
-    cropHealth: 'Average',
-    sowingDate: 'Mar 15, 2024',
-    harvestDate: 'Jun 10, 2024',
+    img: "/assets/state.jpg",
+    name: "State - Kotapola",
+    cropHealth: "Average",
+    sowingDate: "Mar 15, 2024",
+    harvestDate: "Jun 10, 2024",
   },
   {
-    img: '/assets/hotel.jpeg',
-    name: 'Tourist Bangalore',
-    status: 'Available',
-    availability: 'Full',
-    availabledate:'May 12, 2024'
-    
+    img: "/assets/hotel.jpeg",
+    name: "Tourist Bangalore",
+    status: "Available",
+    availability: "Full",
+    availabledate: "May 12, 2024",
   },
   {
-    img: '/assets/nursary.jpeg',
-    name: 'Nursery',
-    plantHealth: 'Excellent',
-    fertilizerDay: 'May 12, 2024',
-    harvestDay: 'Aug 30, 2024',
+    img: "/assets/nursary.jpeg",
+    name: "Nursery",
+    plantHealth: "Excellent",
+    fertilizerDay: "May 12, 2024",
+    harvestDay: "Aug 30, 2024",
   },
 ];
 
@@ -40,11 +43,15 @@ const FarmDetails: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? farmData.length - 1 : prevIndex - 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? farmData.length - 1 : prevIndex - 1
+    );
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === farmData.length - 1 ? 0 : prevIndex + 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === farmData.length - 1 ? 0 : prevIndex + 1
+    );
   };
 
   const currentFarm = farmData[currentIndex];
@@ -52,31 +59,37 @@ const FarmDetails: React.FC = () => {
   return (
     <div className="relative w-full h-full bg-white rounded-lg shadow-md overflow-hidden">
       {/* Image Section */}
-      <img
-        src={currentFarm.img}
-        alt="Farm"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+      <div className="absolute inset-0">
+        <Image
+          src={currentFarm.img}
+          alt="Farm"
+          fill
+          style={{ objectFit: "cover" }}
+          priority
+        />
+      </div>
 
       {/* Navigation Arrows */}
       <button
         onClick={handlePrev}
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 text-3xl"
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 text-3xl z-10"
       >
-       <FontAwesomeIcon icon={faChevronLeft} className='text-2xl' />
+        <FontAwesomeIcon icon={faChevronLeft} className="text-2xl" />
       </button>
       <button
         onClick={handleNext}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 text-3xl"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 text-3xl z-10"
       >
-        <FontAwesomeIcon icon={faChevronRight} className='text-2xl'  /> 
+        <FontAwesomeIcon icon={faChevronRight} className="text-2xl" />
       </button>
 
       {/* Overlay Box with Name, Status, and Details */}
-      <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 rounded-lg p-4 shadow-md font-roboto font-medium text-xl"
-       style={{ width: "742px", height: "150px" }}>
+      <div
+        className="absolute bottom-4 left-4 bg-white bg-opacity-90 rounded-lg p-4 shadow-md font-roboto font-medium text-xl z-10"
+        style={{ width: "742px", height: "150px" }}
+      >
         <h4 className="font-semibold text-xl mb-2">{currentFarm.name}</h4>
-        
+
         <div className="flex justify-between text-sm">
           {currentFarm.cropHealth && (
             <>
@@ -103,7 +116,7 @@ const FarmDetails: React.FC = () => {
               </div>
               <div className="bg-gray-100 p-2 rounded-md text-center w-1/4">
                 <p className="font-semibold mb-2">Availability</p>
-                <p className='text-red-600'>{currentFarm.availability}</p>
+                <p className="text-red-600">{currentFarm.availability}</p>
               </div>
               <div className="bg-gray-100 p-2 rounded-md text-center w-1/3">
                 <p className="font-semibold mb-2">Available Date</p>

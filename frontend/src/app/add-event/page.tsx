@@ -3,12 +3,16 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faPlus, faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendar,
+  faPlus,
+  faTrash,
+  faEdit,
+} from "@fortawesome/free-solid-svg-icons";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-
 
 const AddEvent: React.FC = () => {
   const router = useRouter();
@@ -16,8 +20,8 @@ const AddEvent: React.FC = () => {
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [eventInputs, setEventInputs] = useState<
-  { _id?: string; name: string; time: Date | null }[]
->([]);
+    { _id?: string; name: string; time: Date | null }[]
+  >([]);
 
   // Format the date string from the URL query parameter
   useEffect(() => {
@@ -38,17 +42,18 @@ const AddEvent: React.FC = () => {
     }
   }, []);
 
-
   // Fetch events for the selected date from the backend
   useEffect(() => {
     const fetchEvents = async () => {
       if (!selectedDate) return;
-    
+
       try {
         const response = await fetch(
-          `http://localhost:5000/api/events?date=${selectedDate.toISOString().split("T")[0]}`
+          `${process.env.BACKEND_URL}/api/events?date=${
+            selectedDate.toISOString().split("T")[0]
+          }`
         );
-    
+
         if (response.ok) {
           const data = await response.json();
           if (data && data.events) {
@@ -64,14 +69,9 @@ const AddEvent: React.FC = () => {
         console.error("Error fetching events:", error);
       }
     };
-    
+
     fetchEvents();
   }, [selectedDate]);
-  
-  
-
-
-
 
   const handleBack = () => {
     router.back();
@@ -94,17 +94,11 @@ const AddEvent: React.FC = () => {
     setShowCalendar(false);
   };
 
-
-//Eventclcick function
+  //Eventclcick function
 
   const handleAddEventClick = () => {
-
     setEventInputs([...eventInputs, { name: "", time: null }]); // Add new input fields
   };
-
-
-
-
 
   const handleInputChange = (
     index: number,
@@ -120,24 +114,21 @@ const AddEvent: React.FC = () => {
     newInputs[index].time = time ? new Date(time) : null; // Ensure it's a Date object
     setEventInputs(newInputs);
   };
-  
-
-
 
   const handleSaveEvents = async () => {
     if (!selectedDate) {
       alert("Please select a date first.");
       return;
     }
-  
+
     // Ensure the data structure matches the schema
     const formattedEvents = eventInputs.map((event) => ({
       name: event.name,
       time: event.time?.toISOString().split("T")[1], // Only include the time part
     }));
-  
+
     try {
-      const response = await fetch("http://localhost:5000/api/events", {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/events`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -145,7 +136,7 @@ const AddEvent: React.FC = () => {
           events: formattedEvents,
         }),
       });
-  
+
       if (response.ok) {
         alert("Events saved successfully.");
       } else {
@@ -155,18 +146,18 @@ const AddEvent: React.FC = () => {
       console.error("Error saving events:", error);
     }
   };
-  
+
   //Delete Function
 
   const handleDeleteEvent = async (index: number) => {
     const eventToDelete = eventInputs[index];
     console.log("Event to delete:", eventToDelete);
-  
+
     if (!eventToDelete) {
       console.error("No event found");
       return;
     }
-  
+
     // If the event has no _id, it's an unsaved event (UI-only)
     if (!eventToDelete._id) {
       // Remove the event from the UI state
@@ -175,18 +166,20 @@ const AddEvent: React.FC = () => {
       console.log("Unsaved event removed from UI");
       return;
     }
-  
+
     // If the event has an _id, it's a saved event (backend)
     try {
       const response = await fetch(
-        `http://localhost:5000/api/events/${eventToDelete._id}`,
+        `${process.env.BACKEND_URL}/api/events/${eventToDelete._id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date: selectedDate?.toISOString().split("T")[0] }),
+          body: JSON.stringify({
+            date: selectedDate?.toISOString().split("T")[0],
+          }),
         }
       );
-  
+
       if (response.ok) {
         const updatedData = await response.json();
         setEventInputs(updatedData.events); // Update with fresh data
@@ -198,31 +191,34 @@ const AddEvent: React.FC = () => {
     }
   };
 
-
-
-  
   //Edit Function
 
   const handleEditEvent = async (index: number) => {
     const eventToUpdate = eventInputs[index];
-  
-    
+
     const updatedEvent = {
       ...eventToUpdate,
-      name: prompt("Enter new event name:", eventToUpdate.name) || eventToUpdate.name,
-      time: prompt("Enter new event time:", eventToUpdate.time?.toISOString()) || eventToUpdate.time,
+      name:
+        prompt("Enter new event name:", eventToUpdate.name) ||
+        eventToUpdate.name,
+      time:
+        prompt("Enter new event time:", eventToUpdate.time?.toISOString()) ||
+        eventToUpdate.time,
     };
-  
+
     try {
-      const response = await fetch(`http://localhost:5000/api/events/${eventToUpdate.id}`, {
-        method: "PUT", // Make sure you use PUT for updating
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: updatedEvent.name,
-          time: updatedEvent.time?.toISOString(),
-        }),
-      });
-  
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/events/${eventToUpdate.id}`,
+        {
+          method: "PUT", // Make sure you use PUT for updating
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: updatedEvent.name,
+            time: updatedEvent.time?.toISOString(),
+          }),
+        }
+      );
+
       if (response.ok) {
         const updatedEventData = await response.json();
         // Update the event locally after successful update
@@ -236,7 +232,6 @@ const AddEvent: React.FC = () => {
       console.error("Error updating event:", error);
     }
   };
-  
 
   return (
     <div className="flex flex-col items-center p-10 text-lg">
@@ -283,7 +278,10 @@ const AddEvent: React.FC = () => {
       {/* Input Fields for Events */}
       <div className="w-full max-w-7xl bg-gray-200 rounded-lg p-8 flex flex-col items-center">
         {eventInputs.map((input, index) => (
-          <div key={index} className="w-full flex items-center mb-4 font-roboto">
+          <div
+            key={index}
+            className="w-full flex items-center mb-4 font-roboto"
+          >
             <input
               type="text"
               value={input.name}
@@ -306,17 +304,14 @@ const AddEvent: React.FC = () => {
             </div>
 
             <div className="flex space-x-6 text-xl -ml-14">
-            
-            <div className="border border-red-700 rounded-md p-2 inline-block bg-red-600 hover:scale-105">
-  <button
-    onClick={() => handleDeleteEvent(index)}
-    className="text-white "
-  >
-    Delete
-  </button>
-</div>
-
-
+              <div className="border border-red-700 rounded-md p-2 inline-block bg-red-600 hover:scale-105">
+                <button
+                  onClick={() => handleDeleteEvent(index)}
+                  className="text-white "
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}

@@ -1,26 +1,87 @@
-import { faCalendar, faDollarSign, faTasks, faUser, faUserCheck, faUserFriends, faUserGroup, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import {
+  faUsers,
+  faChartLine,
+  faCalendarAlt,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-interface CardProps { title: string; value: number | string; icon: React.ReactNode; }
-
-const stats = [
-  { title: 'Total Workers', value: 3, icon: <span className="text-4xl text-gray-200"><FontAwesomeIcon icon={faUsers} className='text-green-300'/></span> },
-  { title: 'Active Workers', value: 3, icon: <span className="text-4xl text-gray-200"><FontAwesomeIcon icon={faUserCheck} className='text-green-300'/></span> },
-  { title: 'Pending Tasks', value: 2, icon: <span className="text-4xl text-gray-200"><FontAwesomeIcon icon={faTasks} className='text-green-300'/></span> },
-  { title: "Salaries", value: 0, icon: <span className="text-4xl text-gray-200"><FontAwesomeIcon icon={faDollarSign} className='text-green-300'/></span> },
-];
+interface DashboardStats {
+  totalWorkers: number;
+  activeProjects: number;
+  upcomingTasks: number;
+  alerts: number;
+}
 
 export default function DashboardCards() {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalWorkers: 0,
+    activeProjects: 0,
+    upcomingTasks: 0,
+    alerts: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.BACKEND_URL}/api/workers/stats`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch worker statistics");
+        }
+        const data = await response.json();
+        setStats(data);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const cards = [
+    {
+      title: "Total Workers",
+      value: stats.totalWorkers,
+      icon: faUsers,
+      color: "bg-blue-600",
+    },
+    {
+      title: "Active Projects",
+      value: stats.activeProjects,
+      icon: faChartLine,
+      color: "bg-green-600",
+    },
+    {
+      title: "Upcoming Tasks",
+      value: stats.upcomingTasks,
+      icon: faCalendarAlt,
+      color: "bg-yellow-600",
+    },
+    {
+      title: "Alerts",
+      value: stats.alerts,
+      icon: faExclamationTriangle,
+      color: "bg-red-600",
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((s) => (
-        <div key={s.title} className="bg-white rounded-lg p-4 flex items-center justify-between shadow-lg w-64 h-32 ml-7">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {cards.map((card) => (
+        <div
+          key={card.title}
+          className="bg-white rounded-lg p-6 shadow-sm flex items-center justify-between"
+        >
           <div>
-            <p className="text-gray-500 text-xl">{s.title}</p>
-            <p className="text-3xl font-bold text-green-600 mt-4">{s.value}</p>
+            <p className="text-gray-500 text-sm">{card.title}</p>
+            <p className="text-2xl font-semibold mt-1">{card.value}</p>
           </div>
-          <div>{s.icon}</div>
+          <div className={`${card.color} p-3 rounded-full text-white`}>
+            <FontAwesomeIcon icon={card.icon} className="text-xl" />
+          </div>
         </div>
       ))}
     </div>

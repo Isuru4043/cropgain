@@ -109,7 +109,7 @@ const CropManagement = () => {
     setSearchQuery("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/crops", {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/crops`, {
         method: "GET",
         credentials: "include",
       });
@@ -168,7 +168,7 @@ const CropManagement = () => {
     console.log("Sending payload:", JSON.stringify(payload, null, 2));
 
     try {
-      const response = await fetch("http://localhost:5000/api/crops", {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/crops`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -295,7 +295,7 @@ const CropManagement = () => {
     if (confirm("Are you sure you want to delete this crop?")) {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/crops/${cropId}`,
+          `${process.env.BACKEND_URL}/api/crops/${cropId}`,
           {
             method: "DELETE",
             credentials: "include",

@@ -1,52 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface Task {
   title: string;
   due: string;
   desc: string;
-  priority: 'High' | 'Medium' | 'Low';
-  status: 'pending' | 'in-progress' | 'completed';
+  priority: "High" | "Medium" | "Low";
+  status: "pending" | "in-progress" | "completed";
   assignees: string;
 }
 
 const initialTasks: Task[] = [
   {
-    title: 'Mango Harvesting - North Field',
-    due: '15/12/2023',
-    desc: 'Harvest ripe mangoes from the north field section',
-    priority: 'High',
-    status: 'in-progress',
-    assignees: 'John Smith, Dinesh Perera',
+    title: "Mango Harvesting - North Field",
+    due: "15/12/2023",
+    desc: "Harvest ripe mangoes from the north field section",
+    priority: "High",
+    status: "in-progress",
+    assignees: "John Smith, Dinesh Perera",
   },
   {
-    title: 'Equipment Maintenance',
-    due: '10/12/2023',
-    desc: 'Regular maintenance of harvesting tools and machinery',
-    priority: 'Medium',
-    status: 'pending',
-    assignees: 'Dinesh Perera',
+    title: "Equipment Maintenance",
+    due: "10/12/2023",
+    desc: "Regular maintenance of harvesting tools and machinery",
+    priority: "Medium",
+    status: "pending",
+    assignees: "Dinesh Perera",
   },
   {
-    title: 'Field Preparation',
-    due: '20/12/2023',
-    desc: 'Prepare south field for next planting season',
-    priority: 'Medium',
-    status: 'pending',
-    assignees: 'Kumari Silva, John Smith',
+    title: "Field Preparation",
+    due: "20/12/2023",
+    desc: "Prepare south field for next planting season",
+    priority: "Medium",
+    status: "pending",
+    assignees: "Kumari Silva, John Smith",
   },
 ];
 
-export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boolean }) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+export default function TasksOverview({
+  isTasksTab = false,
+}: {
+  isTasksTab?: boolean;
+}) {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTask, setNewTask] = useState<Task>({
-    title: '',
-    due: '',
-    desc: '',
-    priority: 'Medium',
-    status: 'pending',
-    assignees: '',
+    title: "",
+    due: "",
+    desc: "",
+    priority: "Medium",
+    status: "pending",
+    assignees: "",
   });
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/tasks`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+        const data = await response.json();
+        setTasks(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const handleCreateTask = () => {
     setIsModalOpen(true);
@@ -55,19 +81,36 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
   const handleModalClose = () => {
     setIsModalOpen(false);
     setNewTask({
-      title: '',
-      due: '',
-      desc: '',
-      priority: 'Medium',
-      status: 'pending',
-      assignees: '',
+      title: "",
+      due: "",
+      desc: "",
+      priority: "Medium",
+      status: "pending",
+      assignees: "",
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTasks([...tasks, newTask]);
-    handleModalClose();
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/tasks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add task");
+      }
+
+      const newTaskData = await response.json();
+      setTasks([...tasks, newTaskData]);
+      handleModalClose();
+    } catch (err) {
+      setError((err as Error).message);
+    }
   };
 
   const handleEdit = (title: string) => {
@@ -75,9 +118,25 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
     // Add logic to edit the task (e.g., open a modal)
   };
 
-  const handleDelete = (title: string) => {
-    console.log(`Delete task: ${title}`);
-    // Add logic to delete the task (e.g., confirm and send API request)
+  const handleDelete = async (taskId: string) => {
+    if (!confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/tasks/${taskId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete task");
+      }
+
+      setTasks(tasks.filter((task) => task._id !== taskId));
+    } catch (err) {
+      setError((err as Error).message);
+    }
   };
 
   return (
@@ -108,7 +167,7 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
                   ✏️
                 </button>
                 <button
-                  onClick={() => handleDelete(t.title)}
+                  onClick={() => handleDelete(t._id)}
                   className="text-gray-600 hover:text-red-600"
                   title="Delete"
                 >
@@ -121,22 +180,22 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
             <div className="flex space-x-2">
               <span
                 className={`text-sm px-2 py-1 rounded ${
-                  t.priority === 'High'
-                    ? 'bg-pink-100 text-pink-700'
-                    : t.priority === 'Medium'
-                    ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-gray-100 text-gray-700'
+                  t.priority === "High"
+                    ? "bg-pink-100 text-pink-700"
+                    : t.priority === "Medium"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-gray-100 text-gray-700"
                 }`}
               >
                 {t.priority.toLowerCase()} priority
               </span>
               <span
                 className={`text-sm px-2 py-1 rounded ${
-                  t.status === 'in-progress'
-                    ? 'bg-purple-100 text-purple-700'
-                    : t.status === 'pending'
-                    ? 'bg-gray-100 text-gray-700'
-                    : 'bg-green-100 text-green-700'
+                  t.status === "in-progress"
+                    ? "bg-purple-100 text-purple-700"
+                    : t.status === "pending"
+                    ? "bg-gray-100 text-gray-700"
+                    : "bg-green-100 text-green-700"
                 }`}
               >
                 {t.status}
@@ -153,7 +212,10 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
           <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">Create New Task</h3>
-              <button onClick={handleModalClose} className="text-gray-600 hover:text-gray-800">
+              <button
+                onClick={handleModalClose}
+                className="text-gray-600 hover:text-gray-800"
+              >
                 ✕
               </button>
             </div>
@@ -163,27 +225,37 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
                 <input
                   type="text"
                   value={newTask.title}
-                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, title: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                   placeholder="e.g. Mango Harvesting - North Field"
                   required
                 />
               </div>
               <div>
-                <label className="block mb-1 text-sm font-medium">Due Date</label>
+                <label className="block mb-1 text-sm font-medium">
+                  Due Date
+                </label>
                 <input
                   type="date"
                   value={newTask.due}
-                  onChange={(e) => setNewTask({ ...newTask, due: e.target.value })}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, due: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                   required
                 />
               </div>
               <div>
-                <label className="block mb-1 text-sm font-medium">Description</label>
+                <label className="block mb-1 text-sm font-medium">
+                  Description
+                </label>
                 <textarea
                   value={newTask.desc}
-                  onChange={(e) => setNewTask({ ...newTask, desc: e.target.value })}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, desc: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                   placeholder="e.g. Harvest ripe mangoes from the north field section"
                   rows={3}
@@ -191,11 +263,16 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
                 />
               </div>
               <div>
-                <label className="block mb-1 text-sm font-medium">Priority</label>
+                <label className="block mb-1 text-sm font-medium">
+                  Priority
+                </label>
                 <select
                   value={newTask.priority}
                   onChange={(e) =>
-                    setNewTask({ ...newTask, priority: e.target.value as 'High' | 'Medium' | 'Low' })
+                    setNewTask({
+                      ...newTask,
+                      priority: e.target.value as "High" | "Medium" | "Low",
+                    })
                   }
                   className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                   required
@@ -212,7 +289,10 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
                   onChange={(e) =>
                     setNewTask({
                       ...newTask,
-                      status: e.target.value as 'pending' | 'in-progress' | 'completed',
+                      status: e.target.value as
+                        | "pending"
+                        | "in-progress"
+                        | "completed",
                     })
                   }
                   className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -224,11 +304,15 @@ export default function TasksOverview({ isTasksTab = false }: { isTasksTab?: boo
                 </select>
               </div>
               <div>
-                <label className="block mb-1 text-sm font-medium">Assignees (Comma separated)</label>
+                <label className="block mb-1 text-sm font-medium">
+                  Assignees (Comma separated)
+                </label>
                 <input
                   type="text"
                   value={newTask.assignees}
-                  onChange={(e) => setNewTask({ ...newTask, assignees: e.target.value })}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, assignees: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                   placeholder="e.g. John Smith, Dinesh Perera"
                   required

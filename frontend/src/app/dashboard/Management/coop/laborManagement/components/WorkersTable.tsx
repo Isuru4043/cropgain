@@ -1,20 +1,10 @@
-import { faEdit, faTrash, faUser } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState, useEffect } from 'react';
-
-interface Worker {
-  _id: string;
-  fullName: string;
-  epfNumber: string;
-  age: number;
-  role: string;
-  dateJoined: string;
-}
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { faEdit, faTrash, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, useEffect } from "react";
+import { Worker } from "./types";
 
 export default function WorkersTable() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +13,7 @@ export default function WorkersTable() {
     const fetchWorkers = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_URL}/workers`);
+        const response = await fetch(`${process.env.BACKEND_URL}/api/workers`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -46,8 +36,10 @@ export default function WorkersTable() {
 
   const handleView = async (epf: string) => {
     try {
-      const response = await fetch(`${API_URL}/workers/${epf}`);
-      if (!response.ok) throw new Error('Failed to fetch worker details');
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/workers/${epf}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch worker details");
       const worker = await response.json();
       // Handle viewing worker details (e.g., through a modal)
       console.log(worker);
@@ -58,8 +50,10 @@ export default function WorkersTable() {
 
   const handleEdit = async (epf: string) => {
     try {
-      const response = await fetch(`${API_URL}/workers/${epf}`);
-      if (!response.ok) throw new Error('Failed to fetch worker details');
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/workers/${epf}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch worker details");
       const worker = await response.json();
       // Handle editing worker (e.g., through a form)
       console.log(worker);
@@ -69,14 +63,16 @@ export default function WorkersTable() {
   };
 
   const handleDelete = async (epf: string) => {
-    if (!window.confirm('Are you sure you want to delete this worker?')) return;
-    
+    if (!window.confirm("Are you sure you want to delete this worker?")) return;
     try {
-      const response = await fetch(`${API_URL}/workers/${epf}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to delete worker');
-      setWorkers(workers.filter(w => w.epfNumber !== epf));
+      const response = await fetch(
+        `${process.env.BACKEND_URL}/api/workers/${epf}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete worker");
+      setWorkers(workers.filter((w) => w.epfNumber !== epf));
     } catch (err) {
       setError((err as Error).message);
     }
@@ -94,13 +90,11 @@ export default function WorkersTable() {
           className="border rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
         />
       </div>
-      
+
       {error && (
-        <div className="text-red-500 p-2 bg-red-50 rounded">
-          {error}
-        </div>
+        <div className="text-red-500 p-2 bg-red-50 rounded">{error}</div>
       )}
-      
+
       {isLoading ? (
         <div className="text-center py-4">Loading...</div>
       ) : filteredWorkers.length === 0 ? (
@@ -110,8 +104,18 @@ export default function WorkersTable() {
           <table className="min-w-full text-left">
             <thead>
               <tr>
-                {['Full Name', 'EPF Number', 'Age', 'Role', 'Date Joined', 'Actions'].map((col) => (
-                  <th key={col} className="py-2 px-4 border-b text-xl font-medium text-gray-700">
+                {[
+                  "Full Name",
+                  "EPF Number",
+                  "Age",
+                  "Role",
+                  "Date Joined",
+                  "Actions",
+                ].map((col) => (
+                  <th
+                    key={col}
+                    className="py-2 px-4 border-b text-xl font-medium text-gray-700"
+                  >
                     {col}
                   </th>
                 ))}

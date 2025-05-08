@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Worker } from './types';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import React, { useState, useEffect } from "react";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Worker } from "./types";
 
 export default function RecentWorkers() {
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -14,7 +12,9 @@ export default function RecentWorkers() {
     const fetchRecentWorkers = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_URL}/workers/recent`);
+        const response = await fetch(
+          `${process.env.BACKEND_URL}/api/workers/recent`
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -41,7 +41,9 @@ export default function RecentWorkers() {
       {isLoading ? (
         <div className="text-center py-4">Loading...</div>
       ) : workers.length === 0 ? (
-        <div className="text-center py-4 text-gray-500">No recent workers found</div>
+        <div className="text-center py-4 text-gray-500">
+          No recent workers found
+        </div>
       ) : (
         <ul className="space-y-2">
           {workers.map((w) => (
@@ -51,7 +53,7 @@ export default function RecentWorkers() {
                 <p className="text-gray-500 text-sm">EPF: {w.epfNumber}</p>
               </div>
               <div className="text-right">
-                <p className="text-gray-700 text-sm">{w.skills.join(', ')}</p>
+                <p className="text-gray-700 text-sm">{w.skills.join(", ")}</p>
                 <p className="text-gray-500 text-sm">
                   Joined: {new Date(w.dateJoined).toLocaleDateString()}
                 </p>

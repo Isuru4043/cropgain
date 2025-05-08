@@ -1,16 +1,17 @@
-"use client"; 
+"use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter(); 
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:5000/api/auth/login", {
+    const response = await fetch(`${process.env.BACKEND_URL}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,20 +34,20 @@ const Login: React.FC = () => {
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{
-        backgroundImage: "url('/assets/login-signup background.webp')", // Correct path for the background image
+        backgroundImage: "url('/assets/login-signup background.webp')",
       }}
     >
-      {/* Container for Form and Image */}
       <div className="relative w-full max-w-4xl p-0 bg-white shadow-lg rounded-lg">
-        {/* Right side - Image */}
-        <img
-          src="/assets/green-tea.jpg"
-          alt="Plant background"
-          className="absolute inset-0 object-cover w-full h-full rounded-lg"
-          style={{ zIndex: -1 }} // Ensure the image is behind other elements
-        />
+        <div className="absolute inset-0 rounded-lg overflow-hidden">
+          <Image
+            src="/assets/green-tea.jpg"
+            alt="Plant background"
+            fill
+            style={{ objectFit: "cover" }}
+            priority
+          />
+        </div>
 
-        {/* Login Form */}
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="bg-white bg-opacity-90 shadow-lg w-full max-w-md rounded-lg p-6">
             <h2 className="text-2xl font-bold text-center mb-6">
@@ -92,9 +93,11 @@ const Login: React.FC = () => {
             <div className="mt-6 flex items-center justify-center space-x-4">
               <span className="text-gray-600">Or</span>
               <button className="flex items-center justify-center p-2 border border-gray-300 rounded-md">
-                <img
+                <Image
                   src="/assets/google.png"
                   alt="Google"
+                  width={20}
+                  height={20}
                   className="h-5 w-5"
                 />
                 <span className="ml-2 text-sm text-gray-600">
@@ -102,9 +105,11 @@ const Login: React.FC = () => {
                 </span>
               </button>
               <button className="flex items-center justify-center p-2 border border-gray-300 rounded-md">
-                <img
+                <Image
                   src="/assets/Microsoft.png"
                   alt="Microsoft"
+                  width={20}
+                  height={20}
                   className="h-5 w-5"
                 />
                 <span className="ml-2 text-sm text-gray-600">
@@ -115,7 +120,7 @@ const Login: React.FC = () => {
 
             <div className="mt-6 text-center">
               <span className="text-gray-600">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <a href="/signup" className="text-green-600">
                   Sign Up
                 </a>

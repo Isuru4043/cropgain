@@ -29,7 +29,7 @@ const App: React.FC = () => {
     const fetchCrops = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:5000/api/Accounts/incomePerCrop"
+          `${process.env.BACKEND_URL}/api/Accounts/incomePerCrop`
         );
         setCrops(data);
       } catch (error) {

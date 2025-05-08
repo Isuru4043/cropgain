@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 
 const UserProfile = () => {
   const [userDetails, setUserDetails] = useState({
@@ -94,11 +95,14 @@ const UserProfile = () => {
         <div className="w-full lg:w-1/2 p-10 flex flex-col items-center justify-center bg-gradient-to-br from-green-600 to-green-400">
           <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg">
             {profileImage ? (
-              <img
-                src={profileImage}
-                alt="User"
-                className="w-full h-full object-cover"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={profileImage}
+                  alt="User"
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-green-700 via-green-500 to-green-300 text-white font-semibold">
                 Upload
@@ -152,7 +156,8 @@ const UserProfile = () => {
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   className={`mt-2 block w-full rounded-md border-gray-300 shadow-md focus:ring-green-500 focus:border-green-500 text-sm sm:text-base ${
-                    isEditing || !userDetails[field.id as keyof typeof userDetails]
+                    isEditing ||
+                    !userDetails[field.id as keyof typeof userDetails]
                       ? "bg-green-50"
                       : "bg-gray-100"
                   }`}
@@ -200,9 +205,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-
-
-
-
-
-
