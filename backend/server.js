@@ -16,6 +16,8 @@ const plantingRoutes = require('./routes/plants');
 const fertilizerRoutes = require("./routes/fertilizerTasks");
 const laborRoutes = require("./routes/laborRoute");
 
+const settingsRoutes = require('./routes/settings'); // Import the settings routes
+
 
 
 
@@ -58,6 +60,7 @@ app.use("/api/lands", landRoute);
 app.use('/api/plantings', plantingRoutes);
 app.use("/api/fertilizertasks", fertilizerRoutes);
 app.use("/api/labors", laborRoutes);
+app.use('/api/settings', settingsRoutes); // Use the settings routes under /api/settings
 
 
 
