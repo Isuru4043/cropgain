@@ -141,7 +141,7 @@ const CropManagement = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const payload = {
@@ -203,16 +203,14 @@ const CropManagement = () => {
       setShowForm(false);
       setSelectedCrop(null);
       handleViewAllCrops();
-    } catch (error) {
-      console.error("Full error details:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-        cause: error.cause,
-      });
-      alert(`Failed to submit crop data: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      console.error("Full error details:", error);
+      alert(`Failed to submit crop data: ${errorMessage}`);
     }
   };
+
   //render crops
 
   const renderCrops = () => {

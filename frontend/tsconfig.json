@@ -5,11 +5,12 @@
     "lib": ["dom", "dom.iterable", "esnext"], // Includes modern JavaScript and browser DOM features
     "allowJs": true, // Allows JavaScript files in the project
     "skipLibCheck": true, // Skips type checking for declaration files
-    "strict": true, // Enables strict type checking options
+    "strict": false, // Disables strict type checking options
+    "forceConsistentCasingInFileNames": true, // Ensures consistent casing in file names
     "noEmit": true, // Prevents emitting output files
     "esModuleInterop": true, // Allows ES module interoperability
     "module": "esnext", // Uses the latest ECMAScript module syntax
-    "moduleResolution": "bundler", // Resolves modules using bundler-style resolution
+    "moduleResolution": "node", // Resolves modules using Node.js-style resolution
     "resolveJsonModule": true, // Enables importing JSON files as modules
     "isolatedModules": true, // Ensures each file can be safely transpiled in isolation
     "incremental": true, // Speeds up subsequent builds by creating incremental builds

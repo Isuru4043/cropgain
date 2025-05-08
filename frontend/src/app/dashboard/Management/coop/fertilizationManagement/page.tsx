@@ -805,6 +805,19 @@ const FertilizationManagementPage = () => {
     alert("Reports scheduled successfully.");
   };
 
+  const handleDateSelect = (value: any) => {
+    if (value instanceof Date) {
+      setSelectedDate(value);
+      setShowForm(true);
+    }
+  };
+
+  const handleScheduleDateSelect = (value: any) => {
+    if (value instanceof Date) {
+      setScheduleDate(value);
+    }
+  };
+
   // ---------- Render Module Function ----------
   const renderModule = () => {
     switch (selectedModule) {

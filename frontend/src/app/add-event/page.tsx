@@ -81,17 +81,19 @@ const AddEvent: React.FC = () => {
     setShowCalendar(!showCalendar);
   };
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    setFormattedDate(
-      date.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    );
-    setShowCalendar(false);
+  const handleDateSelect = (value: any) => {
+    if (value instanceof Date) {
+      setSelectedDate(value);
+      setFormattedDate(
+        value.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      );
+      setShowCalendar(false);
+    }
   };
 
   //Eventclcick function
@@ -111,7 +113,7 @@ const AddEvent: React.FC = () => {
 
   const handleTimeChange = (index: number, time: Date | null) => {
     const newInputs = [...eventInputs];
-    newInputs[index].time = time ? new Date(time) : null; // Ensure it's a Date object
+    newInputs[index].time = time;
     setEventInputs(newInputs);
   };
 

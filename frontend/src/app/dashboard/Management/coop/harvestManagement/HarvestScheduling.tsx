@@ -1,15 +1,21 @@
 import React, { useState } from "react";
-import { Calendar } from "react-calendar";
+import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../../../../globals.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
+const urgencyColors = {
+  High: "bg-red-100 text-red-800",
+  Medium: "bg-yellow-100 text-yellow-800",
+  Low: "bg-green-100 text-green-800",
+} as const;
+
 interface HarvestData {
   cropName: string;
   location: string;
   date: Date;
-  urgency: string;
+  urgency: keyof typeof urgencyColors;
   estimatedYield: string;
   yieldUnit: string;
   actualYield: string;
@@ -57,19 +63,13 @@ const HarvestScheduling = () => {
   const [formData, setFormData] = useState<HarvestData>({
     cropName: "",
     location: "",
-    urgency: "",
+    urgency: "Medium", // Set a default value
     estimatedYield: "",
     yieldUnit: "kg",
     actualYield: "",
     notes: "",
-    date: new Date(), // Add default date
+    date: new Date(),
   });
-
-  const urgencyColors = {
-    High: "bg-red-100 text-red-800",
-    Medium: "bg-yellow-100 text-yellow-800",
-    Low: "bg-green-100 text-green-800",
-  };
 
   const handleInputChange = (field: keyof HarvestData, value: string) => {
     setFormData((prev) => ({
@@ -78,9 +78,11 @@ const HarvestScheduling = () => {
     }));
   };
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    setShowForm(true);
+  const handleDateSelect = (value: any) => {
+    if (value instanceof Date) {
+      setSelectedDate(value);
+      setShowForm(true);
+    }
   };
 
   const handleAddHarvest = () => {
@@ -131,7 +133,7 @@ const HarvestScheduling = () => {
     setFormData({
       cropName: "",
       location: "",
-      urgency: "",
+      urgency: "Medium", // Set a default value
       estimatedYield: "",
       yieldUnit: "kg",
       actualYield: "",
