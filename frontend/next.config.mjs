@@ -2,13 +2,17 @@
 const nextConfig = {
   // Enable image optimization
   images: {
-    domains: ["via.placeholder.com"], // Add any other image domains you use
+    unoptimized: true,
+    domains: ["via.placeholder.com"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "**",
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   // Environment variables that should be available at build time
@@ -16,12 +20,13 @@ const nextConfig = {
     BACKEND_URL: process.env.BACKEND_URL || "http://localhost:5000",
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
-  }, // Configure for static export
+  },
+  // Configure for static export
   output: "export",
   distDir: "build",
   trailingSlash: true,
-  assetPrefix: "/",
   basePath: "",
+  assetPrefix: "/",
 
   // Disable image optimization warnings in development
   typescript: {
