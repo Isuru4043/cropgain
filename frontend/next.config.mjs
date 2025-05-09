@@ -21,7 +21,7 @@ const nextConfig = {
       "https://cropgain-backend.onrender.com",
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL ||
-      "https://cropgain-backend.onrender.com"
+      "https://cropgain-backend.onrender.com",
   },
   // Configure for static export
   output: "export",
@@ -32,11 +32,11 @@ const nextConfig = {
 
   // Disable warnings in development
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true
-  }
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

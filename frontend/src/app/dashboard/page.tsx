@@ -29,7 +29,14 @@ const App: React.FC = () => {
     const fetchCrops = async () => {
       try {
         const { data } = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Accounts/incomePerCrop`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/Accounts/incomePerCrop`,
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
         );
         setCrops(data);
       } catch (error) {

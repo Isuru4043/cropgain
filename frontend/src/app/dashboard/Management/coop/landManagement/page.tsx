@@ -77,7 +77,13 @@ export default function LandManagement() {
     return new Date(date).toLocaleDateString("en-GB", options); // 'en-GB' format: DD/MM/YYYY
   };
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lands/land`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lands/land`, {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

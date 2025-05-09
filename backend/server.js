@@ -34,9 +34,11 @@ app.use(
         "http://localhost:3000",
         "https://cropgain.onrender.com",
         "https://crop-gain.onrender.com",
+        "https://cropgain-frontend.onrender.com",
         undefined, // Allow requests with no origin (like mobile apps or curl requests)
       ];
-      if (allowedOrigins.indexOf(origin) !== -1) {
+      console.log("Request Origin:", origin); // Debug log
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -58,6 +60,36 @@ app.use(
     exposedHeaders: ["Set-Cookie", "Authorization"],
   })
 );
+
+// Add security headers
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET,PUT,POST,DELETE,UPDATE,OPTIONS"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, x-auth-token"
+  );
+  next();
+});
+
+// Handle preflight requests
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET,PUT,POST,DELETE,UPDATE,OPTIONS"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, x-auth-token"
+  );
+  res.status(200).end();
+});
 
 // Body parsing middleware
 app.use(express.json());
