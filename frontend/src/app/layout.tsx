@@ -3,8 +3,12 @@ import { Inter, Fanwood_Text } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../context/ThemeContext";
 
-const inter = Inter({ subsets: ["latin"] });
-const fanwoodText = Fanwood_Text({ subsets: ["latin"], weight: "400" });
+const inter = Inter({ subsets: ["latin"], preload: true });
+const fanwoodText = Fanwood_Text({
+  subsets: ["latin"],
+  weight: "400",
+  preload: true,
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
