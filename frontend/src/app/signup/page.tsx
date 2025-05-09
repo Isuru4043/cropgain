@@ -12,7 +12,7 @@ const Signup: React.FC = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     const response = await fetch(
-      `${process.env.BACKEND_URL}/api/auth/register`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`,
       {
         method: "POST",
         headers: {

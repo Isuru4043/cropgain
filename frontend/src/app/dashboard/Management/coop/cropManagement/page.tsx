@@ -107,12 +107,14 @@ const CropManagement = () => {
     setViewAll(true);
     setShowForm(false);
     setSearchQuery("");
-
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/api/crops`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/crops`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch crops");

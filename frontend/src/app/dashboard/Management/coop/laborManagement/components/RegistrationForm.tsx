@@ -99,14 +99,17 @@ export default function RegistrationForm() {
       };
 
       console.log("Sending worker data:", workerData); // Debug log
-
-      const response = await fetch(`${process.env.BACKEND_URL}/api/workers`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(workerData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/workers`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(workerData),
+        }
+      );
 
       const data = await response.json();
 

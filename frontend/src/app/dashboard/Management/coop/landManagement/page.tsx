@@ -76,15 +76,23 @@ export default function LandManagement() {
     };
     return new Date(date).toLocaleDateString("en-GB", options); // 'en-GB' format: DD/MM/YYYY
   };
-
   useEffect(() => {
-    fetch(`${process.env.BACKEND_URL}/api/lands/land`)
-      .then((response) => response.json())
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lands/land`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log("Raw crops data:", JSON.stringify(data, null, 2));
         setCropsData(data);
       })
-      .catch((error) => console.error("Error fetching crops data:", error));
+      .catch((error) => {
+        console.error("Error fetching crops data:", error);
+        // Optionally show an error message to the user
+        alert("Failed to fetch data. Please try again later.");
+      });
   }, []);
 
   const summaryBarData = {
@@ -152,7 +160,7 @@ export default function LandManagement() {
 
     try {
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/lands/${encodeURIComponent(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lands/${encodeURIComponent(
           selectedSection
         )}/crops`,
         {
@@ -160,6 +168,7 @@ export default function LandManagement() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify(newCrop),
         }
       );
@@ -201,7 +210,7 @@ export default function LandManagement() {
 
     try {
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/lands/${encodeURIComponent(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lands/${encodeURIComponent(
           selectedSection
         )}/crops/${encodeURIComponent(cropId)}`,
         {
@@ -209,6 +218,7 @@ export default function LandManagement() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify(updatedCrop),
         }
       );
@@ -253,9 +263,8 @@ export default function LandManagement() {
           selectedSection
         )}/crops/${encodeURIComponent(cropId)}`,
       });
-
       const response = await fetch(
-        `${process.env.BACKEND_URL}/api/lands/${encodeURIComponent(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lands/${encodeURIComponent(
           selectedSection
         )}/crops/${encodeURIComponent(cropId)}`,
         {
@@ -264,6 +273,7 @@ export default function LandManagement() {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
+          credentials: "include",
         }
       );
 

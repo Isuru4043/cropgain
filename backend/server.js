@@ -26,11 +26,36 @@ const app = express();
 // Connect to the database
 connectDB();
 
-// Configure CORS
+// Configure CORS with enhanced security
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://cropgain.onrender.com"],
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "https://cropgain.onrender.com",
+        "https://crop-gain.onrender.com",
+        undefined, // Allow requests with no origin (like mobile apps or curl requests)
+      ];
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "Origin",
+      "X-Requested-With",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers",
+      "x-auth-token",
+    ],
+    exposedHeaders: ["Set-Cookie", "Authorization"],
   })
 );
 
