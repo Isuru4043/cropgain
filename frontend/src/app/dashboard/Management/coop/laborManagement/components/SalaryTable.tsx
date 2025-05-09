@@ -1,31 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
 
-// Enhanced interface with more detailed information
-interface WorkerHours {
-  id: string;
-  name: string;
+interface Worker {
+  _id: string;
+  fullName: string;
+  epfNumber: string;
+}
+
+interface SalaryRecord {
+  _id: string;
+  workerId: Worker;
+  month: string;
   hoursWorked: number;
+  hourlyRate: number;
   overtimeHours: number;
-  deductions: number;
-  date: string;
-  hourlyRate: number; // Individual hourly rate for each employee
-  allowances: number; // Additional allowances (bonuses, etc.) - kept in data model but hidden from UI
-  tax: number; // Estimated tax withholding - kept in data model but hidden from UI
-}
-
-interface Salary {
-  id: string;
-  name: string;
+  overtimeRate: number;
   baseSalary: number;
-  overtime: number;
-  allowances: number; // Kept in model but hidden from UI
-  grossPay: number; // Before deductions
-  tax: number; // Kept in model but hidden from UI
+  overtimePay: number;
+  allowances: number;
   deductions: number;
+  tax: number;
   netPay: number;
-  date: string;
 }
 
+<<<<<<< HEAD
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+=======
 // Generate mock data for all months of multiple years
 const generateMockData = () => {
   const data: Record<string, WorkerHours[]> = {};
@@ -76,15 +75,28 @@ const generateMockData = () => {
 };
 
 const mockMonthlyData = generateMockData();
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
 
 export default function SalaryTable() {
-  // State for application
   const [selectedYear, setSelectedYear] = useState(2025);
+<<<<<<< HEAD
+  const [selectedMonth, setSelectedMonth] = useState('05');
+=======
   const [selectedMonth, setSelectedMonth] = useState("01");
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
   const [showMonthPicker, setShowMonthPicker] = useState(false);
-  const [workerHours, setWorkerHours] = useState<WorkerHours[]>([]);
-  const [salaries, setSalaries] = useState<Salary[]>([]);
+  const [salaries, setSalaries] = useState<SalaryRecord[]>([]);
+  const [workers, setWorkers] = useState<Worker[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+<<<<<<< HEAD
+  const [editSalary, setEditSalary] = useState<SalaryRecord | null>(null);
+  const [customRate, setCustomRate] = useState(1.5);
+
+  const monthPickerRef = useRef<HTMLDivElement>(null);
+  const monthButtonRef = useRef<HTMLButtonElement>(null);
+=======
   const [editEmployee, setEditEmployee] = useState<WorkerHours | null>(null);
   const [showDetails, setShowDetails] = useState<string | null>(null);
   const [customRate, setCustomRate] = useState(1.5); // Default overtime multiplier
@@ -102,9 +114,21 @@ export default function SalaryTable() {
     setWorkerHours(monthData);
     setSalaries([]);
   }, [monthYearKey]);
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
 
-  // Handle clicks outside of the month picker
+  // Fetch workers
   useEffect(() => {
+<<<<<<< HEAD
+    const fetchWorkers = async () => {
+      try {
+        const response = await fetch(`${API_URL}/workers`);
+        if (!response.ok) throw new Error('Failed to fetch workers');
+        const data = await response.json();
+        setWorkers(data);
+      } catch (err) {
+        setError((err as Error).message);
+      }
+=======
     function handleClickOutside(event: MouseEvent) {
       if (
         showMonthPicker &&
@@ -125,11 +149,28 @@ export default function SalaryTable() {
     // Cleanup event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
     };
-  }, [showMonthPicker]);
+    fetchWorkers();
+  }, []);
 
-  // Handle escape key press to close modals
+  // Fetch salaries for selected month
   useEffect(() => {
+<<<<<<< HEAD
+    const fetchSalaries = async () => {
+      setIsLoading(true);
+      try {
+        const month = `${selectedYear}-${selectedMonth}`;
+        const response = await fetch(`${API_URL}/salaries?month=${month}`);
+        if (!response.ok) throw new Error('Failed to fetch salaries');
+        const data = await response.json();
+        setSalaries(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
+=======
     function handleEscapeKey(event: KeyboardEvent) {
       if (event.key === "Escape") {
         if (showMonthPicker) setShowMonthPicker(false);
@@ -141,9 +182,39 @@ export default function SalaryTable() {
 
     return () => {
       document.removeEventListener("keydown", handleEscapeKey);
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
     };
-  }, [showMonthPicker, showEditModal]);
+    fetchSalaries();
+  }, [selectedYear, selectedMonth]);
 
+<<<<<<< HEAD
+  const handleCreateSalary = async (workerId: string) => {
+    try {
+      const month = `${selectedYear}-${selectedMonth}`;
+      const response = await fetch(`${API_URL}/salaries`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          workerId,
+          month,
+          hoursWorked: 160, // Default monthly hours
+          hourlyRate: 15, // Default hourly rate
+          overtimeHours: 0,
+          overtimeRate: customRate,
+          allowances: 0,
+          deductions: 0,
+          tax: 0
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to create salary record');
+      const newSalary = await response.json();
+      setSalaries([...salaries, newSalary]);
+    } catch (err) {
+      setError((err as Error).message);
+=======
   // Available years for selection
   const availableYears = [2024, 2025, 2026];
 
@@ -208,17 +279,54 @@ export default function SalaryTable() {
       );
       setWorkerHours(updatedWorkerHours);
       setShowEditModal(false);
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
     }
   };
 
-  // Toggle details view for a salary record
-  const toggleDetails = (id: string) => {
-    setShowDetails(showDetails === id ? null : id);
+  const handleUpdateSalary = async (id: string, updates: Partial<SalaryRecord>) => {
+    try {
+      const response = await fetch(`${API_URL}/salaries/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) throw new Error('Failed to update salary record');
+      const updatedSalary = await response.json();
+      setSalaries(salaries.map(s => s._id === id ? updatedSalary : s));
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
+  const handleDeleteSalary = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this salary record?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}/salaries/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete salary record');
+      setSalaries(salaries.filter(s => s._id !== id));
+    } catch (err) {
+      setError((err as Error).message);
+    }
   };
 
   // Calculate summary statistics
   const calculateSummary = () => {
     if (salaries.length === 0) return null;
+<<<<<<< HEAD
+    
+    return {
+      totalBaseSalary: salaries.reduce((sum, s) => sum + s.baseSalary, 0),
+      totalOvertimePay: salaries.reduce((sum, s) => sum + s.overtimePay, 0),
+      totalDeductions: salaries.reduce((sum, s) => sum + s.deductions + s.tax, 0),
+      totalNetPay: salaries.reduce((sum, s) => sum + s.netPay, 0),
+=======
 
     const totalBaseSalary = salaries.reduce((sum, s) => sum + s.baseSalary, 0);
     const totalOvertime = salaries.reduce((sum, s) => sum + s.overtime, 0);
@@ -230,6 +338,7 @@ export default function SalaryTable() {
       totalOvertime,
       totalDeductions,
       totalNetPay,
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
     };
   };
 
@@ -313,6 +422,11 @@ export default function SalaryTable() {
               onClick={() => setShowMonthPicker(!showMonthPicker)}
               className="border rounded px-3 py-2 text-sm flex items-center justify-between min-w-40 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
+<<<<<<< HEAD
+              <span>{`${selectedYear}-${selectedMonth}`}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+=======
               <span>{formatMonthDisplay()}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -327,6 +441,7 @@ export default function SalaryTable() {
                   strokeWidth={2}
                   d="M19 9l-7 7-7-7"
                 />
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
               </svg>
             </button>
 
@@ -365,10 +480,15 @@ export default function SalaryTable() {
                     onChange={(e) => setSelectedYear(parseInt(e.target.value))}
                     className="text-sm font-medium focus:outline-none"
                   >
+<<<<<<< HEAD
+                    {[2024, 2025, 2026].map(year => (
+                      <option key={year} value={year}>{year}</option>
+=======
                     {availableYears.map((year) => (
                       <option key={year} value={year}>
                         {year}
                       </option>
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
                     ))}
                   </select>
 
@@ -397,6 +517,24 @@ export default function SalaryTable() {
 
                 {/* Month Grid */}
                 <div className="grid grid-cols-3 gap-2">
+<<<<<<< HEAD
+                  {['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'].map((month) => (
+                    <button
+                      key={month}
+                      onClick={() => {
+                        setSelectedMonth(month);
+                        setShowMonthPicker(false);
+                      }}
+                      className={`py-2 text-sm rounded ${
+                        selectedMonth === month 
+                          ? 'bg-blue-600 text-white' 
+                          : 'hover:bg-gray-100'
+                      }`}
+                    >
+                      {month}
+                    </button>
+                  ))}
+=======
                   {monthNames.map((month, index) => {
                     const monthNum = (index + 1).toString().padStart(2, "0");
                     const isSelected = selectedMonth === monthNum;
@@ -418,6 +556,7 @@ export default function SalaryTable() {
                       </button>
                     );
                   })}
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
                 </div>
               </div>
             )}
@@ -435,6 +574,8 @@ export default function SalaryTable() {
               <option value={2}>2x</option>
             </select>
           </div>
+<<<<<<< HEAD
+=======
 
           <button
             onClick={calculateSalaries}
@@ -442,6 +583,7 @@ export default function SalaryTable() {
           >
             Calculate Salaries
           </button>
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
         </div>
       </div>
 
@@ -450,6 +592,14 @@ export default function SalaryTable() {
         <table className="min-w-full text-left">
           <thead className="bg-gray-50">
             <tr>
+<<<<<<< HEAD
+              <th className="py-3 px-4 text-sm font-medium text-gray-700">Name</th>
+              <th className="py-3 px-4 text-sm font-medium text-gray-700">Base Salary</th>
+              <th className="py-3 px-4 text-sm font-medium text-gray-700">Overtime Pay</th>
+              <th className="py-3 px-4 text-sm font-medium text-gray-700">Deductions</th>
+              <th className="py-3 px-4 text-sm font-medium text-gray-700">Net Pay</th>
+              <th className="py-3 px-4 text-sm font-medium text-gray-700">Actions</th>
+=======
               <th className="py-3 px-4 text-sm font-medium text-gray-700">
                 Name
               </th>
@@ -468,12 +618,38 @@ export default function SalaryTable() {
               <th className="py-3 px-4 text-sm font-medium text-gray-700">
                 Actions
               </th>
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
             </tr>
           </thead>
           <tbody>
             {salaries.length > 0 ? (
               <>
                 {salaries.map((s) => (
+<<<<<<< HEAD
+                  <tr key={s._id} className="hover:bg-gray-50">
+                    <td className="py-3 px-4 border-t text-sm font-medium">{s.workerId.fullName}</td>
+                    <td className="py-3 px-4 border-t text-sm">Rs.{s.baseSalary}</td>
+                    <td className="py-3 px-4 border-t text-sm">Rs.{s.overtimePay}</td>
+                    <td className="py-3 px-4 border-t text-sm">Rs.{s.deductions + s.tax}</td>
+                    <td className="py-3 px-4 border-t text-sm font-medium">Rs.{s.netPay}</td>
+                    <td className="py-3 px-4 border-t text-sm">
+                      <button 
+                        onClick={() => handleDeleteSalary(s._id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {summary && (
+                  <tr className="font-medium bg-blue-100">
+                    <td className="py-3 px-4 border-t text-sm">Total</td>
+                    <td className="py-3 px-4 border-t text-sm">Rs.{summary.totalBaseSalary}</td>
+                    <td className="py-3 px-4 border-t text-sm">Rs.{summary.totalOvertimePay}</td>
+                    <td className="py-3 px-4 border-t text-sm">Rs.{summary.totalDeductions}</td>
+                    <td className="py-3 px-4 border-t text-sm">Rs.{summary.totalNetPay}</td>
+=======
                   <React.Fragment key={s.id}>
                     <tr className="hover:bg-gray-50">
                       <td className="py-3 px-4 border-t text-sm font-medium">
@@ -580,23 +756,31 @@ export default function SalaryTable() {
                     <td className="py-3 px-4 border-t text-sm">
                       Rs.{summary.totalNetPay}
                     </td>
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
                     <td className="py-3 px-4 border-t text-sm"></td>
                   </tr>
                 )}
               </>
             ) : (
               <tr>
+<<<<<<< HEAD
+                <td colSpan={6} className="py-8 px-4 text-center text-sm text-gray-500">
+                  No salary records found for the selected month.
+=======
                 <td
                   colSpan={6}
                   className="py-8 px-4 text-center text-sm text-gray-500"
                 >
                   Select a month and click &quot;Calculate Salaries&quot; to view data.
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+<<<<<<< HEAD
+=======
 
       {/* Mobile Card View */}
       <div className="md:hidden space-y-4">
@@ -866,6 +1050,7 @@ export default function SalaryTable() {
           </div>
         </div>
       )}
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
     </div>
   );
 }
