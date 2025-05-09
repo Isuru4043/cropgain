@@ -1,8 +1,8 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface CoopStateLayoutProps {
   children: ReactNode;
@@ -31,16 +31,21 @@ const NavItem = ({ href, label }: { href: string; label: string }) => {
 };
 
 export default function CoopStateLayout({ children }: CoopStateLayoutProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (pathname === "/dashboard/Management/coop") {
+      router.push("/dashboard/Management/coop/landManagement");
+    }
+  }, [pathname, router]);
+
   return (
     <div className="h-screen flex bg-background font-roboto">
       {/* Left Sidebar */}
       <aside className="w-1/5 bg-green-800 text-white h-full p-4 flex flex-col">
         <nav className="flex-1">
           <ul className="space-y-2">
-            <NavItem
-              href="/dashboard/Management/coop/cropManagement"
-              label="Crop Management"
-            />
             <NavItem
               href="/dashboard/Management/coop/landManagement"
               label="Land Management"
@@ -61,17 +66,8 @@ export default function CoopStateLayout({ children }: CoopStateLayoutProps) {
               href="/dashboard/Management/coop/laborManagement"
               label="Labor Management"
             />
-            <NavItem
-              href="/dashboard/Management/coop/resourceManagement"
-              label="Resource Management"
-            />
-            <NavItem
-              href="/dashboard/Management/coop/integrationCapabilities"
-              label="Integration Capabilities"
-            />
           </ul>
         </nav>
-        {/* Optional: Add Footer or Additional Content Here */}
       </aside>
 
       {/* Content Area */}
