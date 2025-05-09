@@ -19,7 +19,7 @@ exports.addWorker = async (req, res) => {
       epfNumber,
       age,
       role,
-      skills: skills.split(',').map(skill => skill.trim()), // Convert comma-separated string to array
+      skills: Array.isArray(skills) ? skills : skills.split(',').map(skill => skill.trim()),
       dateJoined: new Date(dateJoined),
       contactNumber,
       email,
@@ -40,5 +40,49 @@ exports.getRecentWorkers = async (req, res) => {
     res.status(200).json(recentWorkers);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching recent workers', error: error.message });
+  }
+};
+
+// Update a worker
+exports.updateWorker = async (req, res) => {
+  try {
+    const { epfNumber } = req.params;
+    const worker = await Worker.findOne({ epfNumber });
+    if (!worker) {
+      return res.status(404).json({ message: 'Worker not found' });
+    }
+
+    const updates = { ...req.body };
+    if (updates.skills && !Array.isArray(updates.skills)) {
+      updates.skills = updates.skills.split(',').map(skill => skill.trim());
+    }
+    if (updates.dateJoined) {
+      updates.dateJoined = new Date(updates.dateJoined);
+    }
+
+    const updatedWorker = await Worker.findOneAndUpdate(
+      { epfNumber },
+      updates,
+      { new: true }
+    );
+    res.json(updatedWorker);
+  } catch (error) {
+    res.status(400).json({ message: 'Error updating worker', error: error.message });
+  }
+};
+
+// Delete a worker
+exports.deleteWorker = async (req, res) => {
+  try {
+    const { epfNumber } = req.params;
+    const worker = await Worker.findOne({ epfNumber });
+    if (!worker) {
+      return res.status(404).json({ message: 'Worker not found' });
+    }
+
+    await Worker.findOneAndDelete({ epfNumber });
+    res.json({ message: 'Worker deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting worker', error: error.message });
   }
 };
