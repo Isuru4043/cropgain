@@ -2,7 +2,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import Link from "next/link";
-import Image from 'next/image';
+import Image from "next/image";
 
 const PathSelection = () => {
   const options = [
@@ -17,18 +17,6 @@ const PathSelection = () => {
       image: "/assets/state.jpg",
       color: "bg-purple-500",
       path: "/state-kotapola",
-    },
-    {
-      title: "Tourist Bangalore",
-      image: "/assets/hotel.jpeg",
-      color: "bg-green-500",
-      path: "/tourist-bangalore",
-    },
-    {
-      title: "Nursery",
-      image: "/assets/nursary.jpeg",
-      color: "bg-orange-500",
-      path: "/nursery",
     },
   ];
 
