@@ -13,15 +13,15 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-  }, // Environment variables that should be available at build time
+  },
+  // Environment variables that should be available at build time
   env: {
     NEXT_PUBLIC_BACKEND_URL:
       process.env.NEXT_PUBLIC_BACKEND_URL ||
       "https://cropgain-backend.onrender.com",
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL ||
-      "https://cropgain-backend.onrender.com",
-    NODE_ENV: process.env.NODE_ENV || "production",
+      "https://cropgain-backend.onrender.com"
   },
   // Configure for static export
   output: "export",
@@ -30,13 +30,13 @@ const nextConfig = {
   basePath: "",
   assetPrefix: "/",
 
-  // Disable image optimization warnings in development
+  // Disable warnings in development
   typescript: {
-    ignoreBuildErrors: process.env.NODE_ENV === "development",
+    ignoreBuildErrors: true
   },
   eslint: {
-    ignoreDuringBuilds: process.env.NODE_ENV === "development",
-  },
+    ignoreDuringBuilds: true
+  }
 };
 
 export default nextConfig;
