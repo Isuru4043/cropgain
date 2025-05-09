@@ -2,20 +2,8 @@
 
 import { useState } from "react";
 import { Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
 import React from "react";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-
-ChartJS.register(ChartDataLabels);
-
-ChartJS.register(CategoryScale, LinearScale, ArcElement, Tooltip, Legend);
+import "../lib/chartConfig";
 
 interface CropData {
   Tea: number;

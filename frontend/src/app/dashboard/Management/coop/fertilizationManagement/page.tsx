@@ -7,32 +7,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import Modal from "react-modal";
 import { Bar, Line, Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title,
-  Tooltip as ChartTooltip,
-  Legend,
-} from "chart.js";
 import { FaBars, FaTimes } from "react-icons/fa";
-
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title,
-  ChartTooltip,
-  Legend
-);
+import "../../../../../lib/chartConfig";
 
 // Initialize Modal
 // Adjust if your app root is different
@@ -60,7 +36,7 @@ const FertilizationManagementPage = () => {
   const [selectedModule, setSelectedModule] = useState<string>(
     "Fertilizer Scheduling"
   );
-  
+
   // State variables for fertilizer management
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showForm, setShowForm] = useState<boolean>(false);

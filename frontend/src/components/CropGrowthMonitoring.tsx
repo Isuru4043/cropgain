@@ -2,34 +2,23 @@
 
 import React from "react";
 import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels
-);
+import "../lib/chartConfig";
 
 const CropGrowthMonitoring: React.FC = () => {
   const data = {
     labels: [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ],
     datasets: [
       {
@@ -104,10 +93,18 @@ const CropGrowthMonitoring: React.FC = () => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md" style={{ width: '855px', height: '500px' }}>
-      <h3 className="font-semibold text-3xl mb-4 flex justify-center mt-2">Monthly Income Monitoring</h3>
+    <div
+      className="p-4 bg-white rounded-xl shadow-md"
+      style={{ width: "855px", height: "500px" }}
+    >
+      <h3 className="font-semibold text-3xl mb-4 flex justify-center mt-2">
+        Monthly Income Monitoring
+      </h3>
 
-      <div className="bg-gray-100 rounded-sm " style={{ width: '820px', height: '400px' }}>
+      <div
+        className="bg-gray-100 rounded-sm "
+        style={{ width: "820px", height: "400px" }}
+      >
         <Line data={data} options={options} />
       </div>
     </div>

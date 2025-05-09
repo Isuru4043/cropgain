@@ -30,19 +30,8 @@ connectDB();
 app.use(
   cors({
     origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:3000",
-        "https://cropgain.onrender.com",
-        "https://crop-gain.onrender.com",
-        "https://cropgain-frontend.onrender.com",
-        undefined, // Allow requests with no origin (like mobile apps or curl requests)
-      ];
-      console.log("Request Origin:", origin); // Debug log
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
+      // Allow all origins in production for now
+      callback(null, true);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],

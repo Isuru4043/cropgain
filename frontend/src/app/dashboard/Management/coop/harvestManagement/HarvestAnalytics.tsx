@@ -1,15 +1,6 @@
 import React, { useState } from "react";
 import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Title,
-} from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+import "../../../../../lib/chartConfig";
 
 const HarvestAnalytics = () => {
   const [cropData] = useState([
@@ -32,7 +23,6 @@ const HarvestAnalytics = () => {
 
   return (
     <div>
-     
       <div className="flex flex-col md:flex-row gap-6">
         {/* Pie Chart */}
         <div className="w-full md:w-1/2">
