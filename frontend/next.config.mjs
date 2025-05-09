@@ -19,6 +19,8 @@ const nextConfig = {
   output: 'export',
   distDir: 'build',
   trailingSlash: true,
+  assetPrefix: '/',
+  basePath: '',
   assetPrefix: '.',
   
   // Disable image optimization warnings in development

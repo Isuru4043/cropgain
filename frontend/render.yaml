@@ -2,9 +2,8 @@ services:
   - type: web
     name: cropgain-frontend
     env: node
-    branch: main
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    branch: main    buildCommand: npm install && npm run build
+    startCommand: npx serve build
     envVars:
       - key: NODE_ENV
         value: production
