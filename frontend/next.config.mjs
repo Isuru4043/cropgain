@@ -15,11 +15,12 @@ const nextConfig = {
   env: {
     BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:5000',
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
-  },
-  // Configure output for Vercel deployment
+  },  // Configure for static export
   output: 'export',
   distDir: 'build',
-
+  trailingSlash: true,
+  assetPrefix: '.',
+  
   // Disable image optimization warnings in development
   typescript: {
     ignoreBuildErrors: process.env.NODE_ENV === 'development',
