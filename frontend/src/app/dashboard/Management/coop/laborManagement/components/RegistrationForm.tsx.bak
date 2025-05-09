@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL) {
+  console.error('NEXT_PUBLIC_API_URL is not defined');
+}
+
 interface FormData {
   fullName: string;
   epfNumber: string;
@@ -74,15 +80,29 @@ export default function RegistrationForm() {
     setError(null);
     setSuccess(null);
 
+    if (!API_URL) {
+      setError('API URL is not configured');
+      return;
+    }
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
+<<<<<<< HEAD
+      const skillsString = form.skills.trim();
+      const skillsArray = skillsString
+        .split(',')
+        .map(skill => skill.trim())
+        .filter(Boolean);
+=======
+      // Ensure skills is a string and handle empty cases
       const skillsString = form.skills || "";
       const skillsArray = skillsString
         .split(",")
         .map((skill) => skill.trim())
-        .filter(Boolean);
+        .filter(Boolean); // Remove empty strings
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
 
       const workerData = {
         fullName: form.fullName.trim(),
@@ -95,7 +115,19 @@ export default function RegistrationForm() {
         email: form.email.trim(),
       };
 
-      console.log("Sending worker data:", workerData);
+<<<<<<< HEAD
+      console.log('API URL:', API_URL);
+      console.log('Sending worker data:', workerData);
+
+      const response = await fetch(`${API_URL}/workers`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workerData),
+      });
+=======
+      console.log("Sending worker data:", workerData); // Debug log
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/workers`,
         {
@@ -107,13 +139,21 @@ export default function RegistrationForm() {
           body: JSON.stringify(workerData),
         }
       );
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
+
+      const data = await response.json();
 
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.message || "Failed to register worker");
       }
 
+<<<<<<< HEAD
+      console.log('Response:', data);
+      setSuccess('Worker registered successfully!');
+=======
+      console.log("Response:", data); // Debug log
       setSuccess("Worker registered successfully!");
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
       setForm({
         fullName: "",
         epfNumber: "",
@@ -125,8 +165,13 @@ export default function RegistrationForm() {
         email: "",
       });
     } catch (err) {
-      console.error("Error:", err);
+<<<<<<< HEAD
+      console.error('Registration error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to register worker');
+=======
+      console.error("Error:", err); // Debug log
       setError((err as Error).message);
+>>>>>>> be89693cbe54b854596551a07b8127ccd43093cc
     } finally {
       setIsSubmitting(false);
     }
